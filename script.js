@@ -249,6 +249,27 @@ document.addEventListener('DOMContentLoaded', function() {
 });
     
     
+// Fonction pour convertir les liens Google Drive / GitHub en liens directs
+function normalizeImageUrl(url) {
+  if (!url) return '';
+
+  // --- Google Drive ---
+  if (url.includes("drive.google.com")) {
+    const match = url.match(/\/d\/([^/]+)\//);
+    if (match && match[1]) {
+      return `https://drive.google.com/uc?export=view&id=${match[1]}`;
+    }
+  }
+
+  // --- GitHub ---
+  if (url.includes("github.com") && url.includes("/blob/")) {
+    return url.replace("github.com", "raw.githubusercontent.com").replace("/blob/", "/");
+  }
+
+  // Déjà un lien direct
+  return url;
+}
+
 function displayProduits(data) {
   const container = document.getElementById('produits');
   container.innerHTML = "";
@@ -262,7 +283,7 @@ function displayProduits(data) {
   sections.forEach(section => {
     const sectionId = generateSectionId(section);
     const h2 = document.createElement('h2');
-    h2.textContent = section.toUpperCase(); // <-- Ajouté pour mettre le titre en majuscule
+    h2.textContent = section.toUpperCase();
     h2.id = sectionId;
     container.appendChild(h2);
 
@@ -273,27 +294,27 @@ function displayProduits(data) {
     data
       .filter(p => p.section === section)
       .forEach(produit => {
-       const div = document.createElement('div');
-const hasImage = produit.image && produit.image.trim() !== '';
-div.className = "article produit-ligne" + (hasImage ? "" : " no-image");
+        const div = document.createElement('div');
+        const hasImage = produit.image && produit.image.trim() !== '';
+        div.className = "article produit-ligne" + (hasImage ? "" : " no-image");
 
         const descriptionHtml = produit.description.replace(/\n/g, '<br>');
         const descriptionParam = encodeURIComponent(produit.description);
 
+        const imageUrl = normalizeImageUrl(produit.image);
+
         div.innerHTML = `
           ${hasImage ? `
   <div class="article-image">
-    <img src="${escapeHtml(produit.image)}" 
+    <img src="${escapeHtml(imageUrl)}" 
          alt="${escapeHtml(produit.nom)}" 
-         onclick="showPopup('${escapeHtml(produit.image)}', '${escapeHtml(produit.nom)}', '${descriptionParam}', '${escapeHtml(produit.prix)}', '${escapeHtml(produit.tailles)}', '${escapeHtml(produit.code)}')">
+         onclick="showPopup('${escapeHtml(imageUrl)}', '${escapeHtml(produit.nom)}', '${descriptionParam}', '${escapeHtml(produit.prix)}', '${escapeHtml(produit.tailles)}', '${escapeHtml(produit.code)}')">
   </div>
 ` : ''}
 
-
           <div class="article-details">
-            <h3 style="text-transform: uppercase" onclick="showPopup('${escapeHtml(produit.image)}', '${escapeHtml(produit.nom)}', '${descriptionParam}', '${escapeHtml(produit.prix)}', '${escapeHtml(produit.tailles)}', '${escapeHtml(produit.code)}')">${escapeHtml(produit.nom)}</h3>
-
-            
+            <h3 style="text-transform: uppercase" 
+                onclick="showPopup('${escapeHtml(imageUrl)}', '${escapeHtml(produit.nom)}', '${descriptionParam}', '${escapeHtml(produit.prix)}', '${escapeHtml(produit.tailles)}', '${escapeHtml(produit.code)}')">${escapeHtml(produit.nom)}</h3>
 
             <div class="details">
   ${produit.prix ? (() => {
@@ -317,14 +338,12 @@ ${(() => {
   let note = '';
   let taillesNettoyees = produit.tailles;
 
-  // Extraire le texte entre parenthèses (s'il existe)
   const match = produit.tailles.match(/\(([^)]+)\)/);
   if (match) {
     note = match[1];
     taillesNettoyees = produit.tailles.replace(/\([^)]*\)/g, '').trim();
   }
 
-  // Séparer et formater les tailles avec encadrement
   const taillesArray = taillesNettoyees.split(',')
     .map(t => t.trim())
     .filter(t => t !== '');
@@ -343,10 +362,9 @@ ${(() => {
   `;
 })()}
 <br>
-            <button class="open-button" onclick="showPopup('${escapeHtml(produit.image)}', '${escapeHtml(produit.nom)}', '${descriptionParam}', '${escapeHtml(produit.prix)}', '${escapeHtml(produit.tailles)}', '${escapeHtml(produit.code)}')">Solicite/Realise</button>
+            <button class="open-button" 
+                    onclick="showPopup('${escapeHtml(imageUrl)}', '${escapeHtml(produit.nom)}', '${descriptionParam}', '${escapeHtml(produit.prix)}', '${escapeHtml(produit.tailles)}', '${escapeHtml(produit.code)}')">Solicite/Realise</button>
             
-          
-
           </div>
         `;
         sectionContainer.appendChild(div);
@@ -365,7 +383,6 @@ ${(() => {
     }, 300);
   }
 }
-
 
     
     
