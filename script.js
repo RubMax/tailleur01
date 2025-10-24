@@ -270,7 +270,7 @@ function normalizeImageUrl(url) {
   return url;
 }
 
-function displayProduits(data) {
+function displayProduits(data) { 
   const container = document.getElementById('produits');
   container.innerHTML = "";
   const sections = [...new Set(data.map(item => item.section))];
@@ -305,66 +305,72 @@ function displayProduits(data) {
 
         div.innerHTML = `
           ${hasImage ? `
-  <div class="article-image">
-    <img src="${escapeHtml(imageUrl)}" 
-         alt="${escapeHtml(produit.nom)}" 
-         onclick="showPopup('${escapeHtml(imageUrl)}', '${escapeHtml(produit.nom)}', '${descriptionParam}', '${escapeHtml(produit.prix)}', '${escapeHtml(produit.tailles)}', '${escapeHtml(produit.code)}')">
-  </div>
-` : ''}
+          <div class="article-image">
+            <img src="${escapeHtml(imageUrl)}" 
+                 alt="${escapeHtml(produit.nom)}" 
+                 onclick="showPopup('${escapeHtml(imageUrl)}', '${escapeHtml(produit.nom)}', '${descriptionParam}', '${escapeHtml(produit.prix)}', '${escapeHtml(produit.tailles)}', '${escapeHtml(produit.code)}')">
+          </div>
+          ` : ''}
 
           <div class="article-details">
             <h3 style="text-transform: uppercase" 
-                onclick="showPopup('${escapeHtml(imageUrl)}', '${escapeHtml(produit.nom)}', '${descriptionParam}', '${escapeHtml(produit.prix)}', '${escapeHtml(produit.tailles)}', '${escapeHtml(produit.code)}')">${escapeHtml(produit.nom)}</h3>
+                onclick="showPopup('${escapeHtml(imageUrl)}', '${escapeHtml(produit.nom)}', '${descriptionParam}', '${escapeHtml(produit.prix)}', '${escapeHtml(produit.tailles)}', '${escapeHtml(produit.code)}')">
+                ${escapeHtml(produit.nom)}
+            </h3>
 
             <div class="details">
-  ${produit.prix ? (() => {
-  try {
-    if (produit.prix.includes('-')) {
-      const [oldPrice, newPrice] = produit.prix.split('-').map(p => escapeHtml(p.trim()));
-      return `
-        <div class="price-container">
-          <span class="old-price">R$ ${oldPrice}</span>
-          <span class="new-price">R$ ${newPrice}</span>
-        </div>
-      `;
-    }
-    return `<p>R$ <strong>${escapeHtml(produit.prix)}</strong></p>`;
-  } catch (e) {
-    return `<p>R$ <strong>${escapeHtml(produit.prix)}</strong></p>`;
-  }
-})() : ''}
+              ${produit.prix ? (() => {
+                try {
+                  if (produit.prix.includes('-')) {
+                    const [oldPrice, newPrice] = produit.prix.split('-').map(p => escapeHtml(p.trim()));
+                    return `
+                      <div class="price-container">
+                        <span class="old-price">R$ ${oldPrice}</span>
+                        <span class="new-price">R$ ${newPrice}</span>
+                      </div>
+                    `;
+                  }
+                  return `<p>R$ <strong>${escapeHtml(produit.prix)}</strong></p>`;
+                } catch (e) {
+                  return `<p>R$ <strong>${escapeHtml(produit.prix)}</strong></p>`;
+                }
+              })() : ''}
 
-${(() => {
-  let note = '';
-  let taillesNettoyees = produit.tailles;
+              ${(() => {
+                let note = '';
+                let taillesNettoyees = produit.tailles;
 
-  const match = produit.tailles.match(/\(([^)]+)\)/);
-  if (match) {
-    note = match[1];
-    taillesNettoyees = produit.tailles.replace(/\([^)]*\)/g, '').trim();
-  }
+                const match = produit.tailles.match(/\(([^)]+)\)/);
+                if (match) {
+                  note = match[1];
+                  taillesNettoyees = produit.tailles.replace(/\([^)]*\)/g, '').trim();
+                }
 
-  const taillesArray = taillesNettoyees.split(',')
-    .map(t => t.trim())
-    .filter(t => t !== '');
+                const taillesArray = taillesNettoyees.split(',')
+                  .map(t => t.trim())
+                  .filter(t => t !== '');
 
-  const taillesEncadrees = taillesArray.map(taille => 
-  `<span class="taille-encadree">🔹 ${escapeHtml(taille)}</span>`
-).join(' ');
+                const taillesEncadrees = taillesArray.map(taille => 
+                  `<span class="taille-encadree">🔹 ${escapeHtml(taille)}</span>`
+                ).join(' ');
 
-  return `
-    ${note ? `<p class="note-text"><strong>${escapeHtml(note)}</strong></p>` : ''}
-    ${taillesArray.length > 0 ? `
-      <div class="tailles-container">
-        ${taillesEncadrees}
-      </div>
-    ` : ''}
-  `;
-})()}
-<br>
-            <button class="open-button" 
-                    onclick="showPopup('${escapeHtml(imageUrl)}', '${escapeHtml(produit.nom)}', '${descriptionParam}', '${escapeHtml(produit.prix)}', '${escapeHtml(produit.tailles)}', '${escapeHtml(produit.code)}')">Solicite/Realise</button>
-            
+                return `
+                  ${note ? `<p class="note-text"><strong>${escapeHtml(note)}</strong></p>` : ''}
+                  ${taillesArray.length > 0 ? `
+                    <div class="tailles-container">
+                      ${taillesEncadrees}
+                    </div>
+                  ` : ''}
+                `;
+              })()}
+              <br>
+              ${produit.prix && produit.prix.trim() !== '' ? `
+                <button class="open-button" 
+                        onclick="showPopup('${escapeHtml(imageUrl)}', '${escapeHtml(produit.nom)}', '${descriptionParam}', '${escapeHtml(produit.prix)}', '${escapeHtml(produit.tailles)}', '${escapeHtml(produit.code)}')">
+                  Solicite/Realise
+                </button>
+              ` : ''}
+            </div>
           </div>
         `;
         sectionContainer.appendChild(div);
@@ -383,6 +389,7 @@ ${(() => {
     }, 300);
   }
 }
+
 
     
     
