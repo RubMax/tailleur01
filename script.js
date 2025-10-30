@@ -607,31 +607,44 @@ ${(() => {
 
     
        function updateGallery() {
-      const galleryImages = document.getElementById('gallery-images');
-      const galleryDots = document.getElementById('gallery-dots');
-      
-      galleryImages.innerHTML = '';
-      galleryDots.innerHTML = '';
-      
-      imageUrls.forEach((url, index) => {
-        // Ajouter l'image
-        const img = document.createElement('img');
-        img.src = url;
-        img.alt = currentProduct.nom;
-        img.className = 'gallery-image';
-        galleryImages.appendChild(img);
-        
-        // Ajouter le point de navigation
-        const dot = document.createElement('span');
-        dot.className = 'gallery-dot' + (index === currentImageIndex ? ' active' : '');
-        dot.onclick = () => goToImage(index);
-        galleryDots.appendChild(dot);
+  const galleryImages = document.getElementById('gallery-images');
+  const galleryDots = document.getElementById('gallery-dots');
+  
+  galleryImages.innerHTML = '';
+  galleryDots.innerHTML = '';
+  
+  imageUrls.forEach((url, index) => {
+    // Créer le conteneur pour pinch-zoom
+    const zoomContainer = document.createElement('div');
+    zoomContainer.className = 'zoomContainer';
+
+    // Ajouter l'image dans le conteneur
+    const img = document.createElement('img');
+    img.src = url;
+    img.alt = currentProduct.nom;
+    img.className = 'gallery-image';
+    zoomContainer.appendChild(img);
+
+    // Ajouter le conteneur à la galerie
+    galleryImages.appendChild(zoomContainer);
+
+    // Ajouter le point de navigation
+    const dot = document.createElement('span');
+    dot.className = 'gallery-dot' + (index === currentImageIndex ? ' active' : '');
+    dot.onclick = () => goToImage(index);
+    galleryDots.appendChild(dot);
+
+    // Initialiser le zoom sur cette image
+    setTimeout(() => {
+      new PinchZoom.default(zoomContainer, {
+        draggableUnzoomed: false
       });
-      
-      // Positionner la galerie sur l'image actuelle
-      galleryImages.style.transform = `translateX(-${currentImageIndex * 100}%)`;
-    }
-    
+    }, 100);
+  });
+
+  // Positionner la galerie sur l'image actuelle
+  galleryImages.style.transform = `translateX(-${currentImageIndex * 100}%)`;
+}
     function prevImage() {
       if (currentImageIndex > 0) {
         currentImageIndex--;
