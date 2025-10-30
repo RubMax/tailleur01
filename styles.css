@@ -982,13 +982,4 @@
   flex: 1;
 }
 
-/* Optionnel — pour éviter les débordements visuels */
-.zoomContainer {
-  overflow: hidden;
-  touch-action: none;
-}
-.gallery-image {
-  width: 100%;
-  height: auto;
-  display: block;
-}
+
