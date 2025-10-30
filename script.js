@@ -709,14 +709,13 @@ ${(() => {
     return;
   }
 
-  let message = `Olá, Gostaria de solicitar, fazer ou saber mais sobre este produto: ${currentProduct.nom}\n` +
-                `Codigo : ${currentProduct.code}\n` +
-                `Preco : R$ ${currentProduct.prix}`;
+  let message = `Olá!:\n` + 
+                `${currentProduct.nom}\n`;
 
   if (currentProduct.selectedSize) {
-    message += `\nT/Desc : ${currentProduct.selectedSize}`;
+    message += `\nDesc : ${currentProduct.selectedSize}`;
   } else if (sizesArray.length === 1) {
-    message += `\nT/Desc : ${sizesArray[0]}`;
+    message += `\nDesc : ${sizesArray[0]}`;
   }
 
   window.open(`https://wa.me/916204805?text=${encodeURIComponent(message)}`, '_blank');
