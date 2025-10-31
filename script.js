@@ -709,15 +709,15 @@ ${(() => {
     return;
   }
 
-  let message = `Olá!:\n` + 
+  let message = `Olá! Mwen vle rechaje:\n` + 
                 `${currentProduct.nom}\n`;
 
   if (currentProduct.selectedSize) {
     message += `\nDesc : ${currentProduct.selectedSize}`;
   } else if (sizesArray.length === 1) {
-    message += `\nDesc : ${sizesArray[0]}`;
+    message += `\nDesc : ${sizesArray[0]}\n`;
   }
-
+`${Ou ka edem SVP?}\n`;
   window.open(`https://wa.me/916204805?text=${encodeURIComponent(message)}`, '_blank');
 }
 
