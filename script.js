@@ -715,9 +715,9 @@ ${(() => {
   if (currentProduct.selectedSize) {
     message += `\nDesc : ${currentProduct.selectedSize}`;
   } else if (sizesArray.length === 1) {
-    message += `\nDesc : ${sizesArray[0]}\n`;
+    message += `\nDesc : ${sizesArray[0]}`;
   }
-`${Ou ka edem SVP?}\n`;
+
   window.open(`https://wa.me/916204805?text=${encodeURIComponent(message)}`, '_blank');
 }
 
