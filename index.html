@@ -126,6 +126,144 @@
     </div>
   </div><!-- /#app -->
 
+  <!-- Popup d'enregistrement -->
+<div id="registrationPopup" class="popup-overlay" style="display: none;">
+  <div class="popup-content">
+    <div class="popup-header">
+      <h3>Bienvenue chez RubMax Servicos</h3>
+      <p>Veuillez vous enregistrer pour continuer</p>
+    </div>
+    
+    <form id="registrationForm">
+      <div class="form-group">
+        <label for="userName">Nom complet *</label>
+        <input type="text" id="userName" name="nom" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="userPhone">Téléphone *</label>
+        <input type="tel" id="userPhone" name="telephone" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="userEmail">Email *</label>
+        <input type="email" id="userEmail" name="email" required>
+      </div>
+      
+      <div class="form-buttons">
+        <button type="submit" id="submitBtn" class="btn-primary">
+          S'enregistrer
+        </button>
+      </div>
+    </form>
+    
+    <div id="message" class="message"></div>
+  </div>
+</div>
+
+<style>
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+}
+
+.popup-content {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 400px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.popup-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.popup-header h3 {
+  margin: 0 0 10px 0;
+  color: #333;
+}
+
+.popup-header p {
+  margin: 0;
+  color: #666;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #333;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+.form-buttons {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.btn-primary {
+  background: #83addc;
+  color: white;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.btn-primary:hover {
+  background: #6a98c4;
+}
+
+.btn-primary:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.message {
+  margin-top: 15px;
+  padding: 10px;
+  border-radius: 5px;
+  text-align: center;
+  display: none;
+}
+
+.message.success {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.message.error {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+</style>
+
   <script src="script.js" defer></script>
   <script src="install.js"></script>
 
@@ -173,9 +311,118 @@
         app.classList.add("app-ready");
       });
     });
+
+
+
+    // Vérifier si l'utilisateur est déjà enregistré
+function checkFirstTimeVisit() {
+  const isRegistered = localStorage.getItem('rubmax_registered');
+  const registrationShown = sessionStorage.getItem('registration_shown');
+  
+  // Si pas encore enregistré ET popup pas encore affiché dans cette session
+  if (!isRegistered && !registrationShown) {
+    showRegistrationPopup();
+    sessionStorage.setItem('registration_shown', 'true');
+  }
+}
+
+// Afficher le popup d'enregistrement
+function showRegistrationPopup() {
+  const popup = document.getElementById('registrationPopup');
+  if (popup) {
+    popup.style.display = 'flex';
+  }
+}
+
+// Cacher le popup
+function hideRegistrationPopup() {
+  const popup = document.getElementById('registrationPopup');
+  if (popup) {
+    popup.style.display = 'none';
+  }
+}
+
+// Envoyer les données d'enregistrement
+async function registerUser(userData) {
+  try {
+    const submitBtn = document.getElementById('submitBtn');
+    const messageDiv = document.getElementById('message');
+    
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Enregistrement...';
+    
+    // Ajouter userAgent pour le tracking
+    userData.userAgent = navigator.userAgent;
+    
+    const response = await fetch('YOUR_SCRIPT_URL', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        action: 'register',
+        ...userData
+      })
+    });
+    
+    const result = await response.json();
+    
+    if (result.success) {
+      messageDiv.textContent = result.message;
+      messageDiv.className = 'message success';
+      messageDiv.style.display = 'block';
+      
+      // Marquer comme enregistré dans le localStorage
+      localStorage.setItem('rubmax_registered', 'true');
+      
+      // Cacher le popup après 2 secondes
+      setTimeout(() => {
+        hideRegistrationPopup();
+      }, 2000);
+    } else {
+      messageDiv.textContent = result.message;
+      messageDiv.className = 'message error';
+      messageDiv.style.display = 'block';
+    }
+    
+  } catch (error) {
+    console.error('Erreur enregistrement:', error);
+    const messageDiv = document.getElementById('message');
+    messageDiv.textContent = 'Erreur de connexion. Veuillez réessayer.';
+    messageDiv.className = 'message error';
+    messageDiv.style.display = 'block';
+  } finally {
+    const submitBtn = document.getElementById('submitBtn');
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'S\'enregistrer';
+  }
+}
+
+// Événement de soumission du formulaire
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.getElementById('registrationForm');
+  if (form) {
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const formData = new FormData(form);
+      const userData = {
+        nom: formData.get('nom'),
+        telephone: formData.get('telephone'),
+        email: formData.get('email')
+      };
+      
+      registerUser(userData);
+    });
+  }
+  
+  // Vérifier au chargement de la page
+  checkFirstTimeVisit();
+});
   </script>
 </body>
 </html>
+
 
 
 
