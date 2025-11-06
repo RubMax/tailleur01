@@ -16,7 +16,7 @@
  if (socialLinks) socialLinks.remove();
     if (pedDePage) pedDePage.remove();
       // Chargement des données
-     fetch("https://script.google.com/macros/s/AKfycbyRHCuLb0IC_fLpQs36UW_zzgnwmDHAJtDZHByZjz3rxHieXr-Xw54yt5NvCEZgzk64xQ/exec?page=api")
+     fetch("https://script.google.com/macros/s/AKfycbzDeSDfYzb_953duQ-HuubILeZfzoRrtNe7d2Z7MEQbvVH9tzFZ1Dm0xTSHyZEgl7BIzg/exec?page=api")
   .then(response => response.json())
   .then(data => {
     displayProduits(data);
@@ -869,7 +869,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const data = { nom, tel, email };
 
-      fetch("https://script.google.com/macros/s/AKfycbyRHCuLb0IC_fLpQs36UW_zzgnwmDHAJtDZHByZjz3rxHieXr-Xw54yt5NvCEZgzk64xQ/exec?action=saveRegistration", {
+      fetch("https://script.google.com/macros/s/AKfycbzDeSDfYzb_953duQ-HuubILeZfzoRrtNe7d2Z7MEQbvVH9tzFZ1Dm0xTSHyZEgl7BIzg/exec?action=saveRegistration", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data)
