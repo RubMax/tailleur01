@@ -848,3 +848,46 @@ function initLogoTouchHandler(logo) {
 }
 
 document.addEventListener('DOMContentLoaded', waitForLogoAndInit);
+
+//==================================================================================
+//===============================================================================
+document.addEventListener("DOMContentLoaded", () => {
+  // Vérifie si l’utilisateur est déjà enregistré
+  if (!localStorage.getItem("registeredUser")) {
+    const popup = document.getElementById("registerPopup");
+    popup.style.display = "flex";
+
+    document.getElementById("registerBtn").addEventListener("click", () => {
+      const nom = document.getElementById("userName").value.trim();
+      const tel = document.getElementById("userPhone").value.trim();
+      const email = document.getElementById("userEmail").value.trim();
+
+      if (!nom || !tel || !email) {
+        alert("Merci de remplir tous les champs.");
+        return;
+      }
+
+      const data = { nom, tel, email };
+
+      fetch("https://script.google.com/macros/s/AKfycbyRHCuLb0IC_fLpQs36UW_zzgnwmDHAJtDZHByZjz3rxHieXr-Xw54yt5NvCEZgzk64xQ/exec?action=saveRegistration", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      })
+      .then(res => res.json())
+      .then(response => {
+        if (response.success) {
+          localStorage.setItem("registeredUser", "true");
+          alert("✅ Inscription réussie !");
+          popup.style.display = "none";
+        } else {
+          alert("❌ Erreur : " + response.message);
+        }
+      })
+      .catch(err => {
+        alert("⚠️ Problème de connexion : " + err.message);
+      });
+    });
+  }
+});
+
