@@ -322,6 +322,7 @@
     // Configuration
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyRHCuLb0IC_fLpQs36UW_zzgnwmDHAJtDZHByZjz3rxHieXr-Xw54yt5NvCEZgzk64xQ/exec'; // REMPLACEZ PAR VOTRE URL
 
+
 // Vérifier si l'utilisateur est déjà enregistré
 function checkFirstTimeVisit() {
   const isRegistered = localStorage.getItem('rubmax_registered');
@@ -355,25 +356,6 @@ function hideRegistrationPopup() {
   }
 }
 
-// Tester la connexion au script
-async function testConnection() {
-  try {
-    const response = await fetch(SCRIPT_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        action: 'test'
-      })
-    });
-    return response.ok;
-  } catch (error) {
-    console.error('Test connexion échoué:', error);
-    return false;
-  }
-}
-
 // Envoyer les données d'enregistrement
 async function registerUser(userData) {
   try {
@@ -386,11 +368,13 @@ async function registerUser(userData) {
     submitBtn.disabled = true;
     submitBtn.textContent = 'Enregistrement...';
     
-    console.log('Envoi des données:', userData);
+    console.log('Envoi des données vers:', SCRIPT_URL);
+    console.log('Données:', userData);
     
     // Ajouter userAgent pour le tracking
     userData.userAgent = navigator.userAgent;
     
+    // Utiliser fetch avec le mode 'no-cors' si nécessaire
     const response = await fetch(SCRIPT_URL, {
       method: 'POST',
       headers: {
@@ -402,10 +386,21 @@ async function registerUser(userData) {
       })
     });
     
-    console.log('Réponse reçue:', response);
+    console.log('Statut réponse:', response.status);
+    console.log('Réponse headers:', response.headers);
     
-    const result = await response.json();
-    console.log('Résultat:', result);
+    const textResponse = await response.text();
+    console.log('Réponse texte:', textResponse);
+    
+    let result;
+    try {
+      result = JSON.parse(textResponse);
+    } catch (parseError) {
+      console.error('Erreur parsing JSON:', parseError);
+      throw new Error('Réponse invalide du serveur');
+    }
+    
+    console.log('Résultat parsé:', result);
     
     if (result.success) {
       messageDiv.textContent = result.message || 'Enregistrement réussi !';
@@ -426,9 +421,9 @@ async function registerUser(userData) {
     }
     
   } catch (error) {
-    console.error('Erreur enregistrement:', error);
+    console.error('Erreur enregistrement détaillée:', error);
     const messageDiv = document.getElementById('message');
-    messageDiv.textContent = 'Erreur de connexion. Vérifiez votre connexion internet.';
+    messageDiv.textContent = 'Erreur de connexion. Vérifiez l\'URL du script. Erreur: ' + error.message;
     messageDiv.className = 'message error';
     messageDiv.style.display = 'block';
   } finally {
@@ -437,6 +432,20 @@ async function registerUser(userData) {
       submitBtn.disabled = false;
       submitBtn.textContent = 'S\'enregistrer';
     }
+  }
+}
+
+// Test de connexion au script (optionnel)
+async function testScriptConnection() {
+  try {
+    console.log('Test de connexion vers:', SCRIPT_URL);
+    const response = await fetch(SCRIPT_URL + '?test=true');
+    const text = await response.text();
+    console.log('Test réponse:', text);
+    return text.includes('RubMax') || text.includes('API'); // Votre script retourne "RubMax Servicos API"
+  } catch (error) {
+    console.error('Test échoué:', error);
+    return false;
   }
 }
 
@@ -475,6 +484,11 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
   
+  // Tester la connexion au chargement (pour debug)
+  testScriptConnection().then(success => {
+    console.log('Test connexion script:', success ? 'SUCCÈS' : 'ÉCHEC');
+  });
+  
   // Vérifier au chargement de la page
   checkFirstTimeVisit();
 });
@@ -487,6 +501,7 @@ function isValidEmail(email) {
   </script>
 </body>
 </html>
+
 
 
 
