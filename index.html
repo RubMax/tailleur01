@@ -38,6 +38,8 @@
     /* On cache l'app sous le loader (transition douce optionnelle) */
     #app { opacity: 0; transition: opacity .2s; }
     #app.app-ready { opacity: 1; }
+
+
   </style>
 </head>
 <body>
@@ -127,6 +129,20 @@
   </div><!-- /#app -->
 <!-- =========================================================================================================== -->
   
+<!-- 🔹 POPUP D'INSCRIPTION UTILISATEUR -->
+<div id="registerPopup" class="popup-overlay">
+  <div class="popup-content">
+    <h2>Bienvenue 👋</h2>
+    <p>Merci d'utiliser <strong>RubMax Servicos</strong> !<br>
+    Veuillez remplir ces informations pour continuer :</p>
+
+    <input type="text" id="userName" placeholder="Votre nom complet" required>
+    <input type="tel" id="userPhone" placeholder="Téléphone" required>
+    <input type="email" id="userEmail" placeholder="E-mail" required>
+
+    <button id="registerBtn">S’enregistrer</button>
+  </div>
+</div>
 
 <!-- =========================================================================================================== -->
   <script src="script.js" defer></script>
@@ -187,6 +203,7 @@
   </script>
 </body>
 </html>
+
 
 
 
