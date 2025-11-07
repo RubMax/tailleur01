@@ -38,8 +38,6 @@
     /* On cache l'app sous le loader (transition douce optionnelle) */
     #app { opacity: 0; transition: opacity .2s; }
     #app.app-ready { opacity: 1; }
-
-
   </style>
 </head>
 <body>
@@ -51,12 +49,12 @@
     <!-- En-tête fixe -->
     <div class="fixed-header">
       <div class="logo-container" style="display: flex">
-        <p style="font-weight: bold; color: blue; font-size: 20px;"><strong>RECARGA INTERNACIONAL</strong></p>
+        <img id="logo" class="logo-img">
         <button id="installBtn" style="
           background-color:;
           color: white;
           padding: 2px 2px;
-          font-size: 20px;
+          font-size: 18px;
           border: none;
           border-radius: 8px;
           box-shadow: 0 0 10px rgba(0,0,0,0.2);
@@ -127,24 +125,7 @@
       </div>
     </div>
   </div><!-- /#app -->
-<!-- =========================================================================================================== -->
-  
-<!-- 🔹 POPUP D'INSCRIPTION UTILISATEUR -->
-<div id="registerPopup" class="popup-overlay">
-  <div class="popup-content">
-    <h2>Bienvenue 👋</h2>
-    <p>Merci d'utiliser <strong>RubMax Servicos</strong> !<br>
-    Veuillez remplir ces informations pour continuer :</p>
 
-    <input type="text" id="userName" placeholder="Votre nom complet" required>
-    <input type="tel" id="userPhone" placeholder="Téléphone" required>
-    <input type="email" id="userEmail" placeholder="E-mail" required>
-
-    <button id="registerBtn">S’enregistrer</button>
-  </div>
-</div>
-
-<!-- =========================================================================================================== -->
   <script src="script.js" defer></script>
   <script src="install.js"></script>
 
@@ -154,7 +135,7 @@
       const app = document.getElementById("app");
       const logoEl = document.getElementById("logo");
 
-      const BASE = "https://script.google.com/macros/s/AKfycbyRHCuLb0IC_fLpQs36UW_zzgnwmDHAJtDZHByZjz3rxHieXr-Xw54yt5NvCEZgzk64xQ/exec";
+      const BASE = "https://script.google.com/macros/s/AKfycbwoTyj8mpGYPfWCOxszGA-SPYTSBsJbJoHyFKgIr-b5xSAu-CO9pgE3bCebLGAWCVDnPg/exec";
       const logoUrlAPI = BASE + "?page=logo";
       const dataUrlAPI = BASE + "?page=api";
 
@@ -192,31 +173,6 @@
         app.classList.add("app-ready");
       });
     });
-
-//===============================================================================================
-//==============================================================================================
-
-
-
-
-
   </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
