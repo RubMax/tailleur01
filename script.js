@@ -849,3 +849,65 @@ function initLogoTouchHandler(logo) {
 }
 
 document.addEventListener('DOMContentLoaded', waitForLogoAndInit);
+
+
+const popup = document.getElementById("popup");
+const enregistrerBtn = document.getElementById("enregistrerBtn");
+
+const GAS_URL = "https://script.google.com/macros/s/TON_SCRIPT_ID/exec"; // change ici
+
+// Afficher le popup seulement la première fois
+window.addEventListener("load", async () => {
+  const dejaEnregistre = localStorage.getItem("enregistre");
+  if (!dejaEnregistre) {
+    popup.style.display = "flex";
+    await chargerAgents();
+  }
+});
+
+// Charger la liste des agents depuis Google Sheets
+async function chargerAgents() {
+  try {
+    const res = await fetch(`${GAS_URL}?action=getAgents`);
+    const data = await res.json();
+    const select = document.getElementById("agentSelect");
+    select.innerHTML = `<option value="">Choisir un agent</option>`;
+    data.forEach(agent => {
+      const opt = document.createElement("option");
+      opt.value = agent;
+      opt.textContent = agent;
+      select.appendChild(opt);
+    });
+  } catch (err) {
+    console.error("Erreur lors du chargement des agents:", err);
+  }
+}
+
+// Sauvegarder le client
+enregistrerBtn.addEventListener("click", async () => {
+  const nom = document.getElementById("nom").value.trim();
+  const tel = document.getElementById("tel").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const agent = document.getElementById("agentSelect").value;
+
+  if (!nom || !tel || !email || !agent) {
+    alert("Veuillez remplir tous les champs.");
+    return;
+  }
+
+  try {
+    const res = await fetch(`${GAS_URL}?action=saveClient&nom=${encodeURIComponent(nom)}&tel=${encodeURIComponent(tel)}&email=${encodeURIComponent(email)}&agent=${encodeURIComponent(agent)}`);
+    const text = await res.text();
+
+    if (text === "OK") {
+      alert("Enregistrement réussi !");
+      localStorage.setItem("enregistre", "true");
+      popup.style.display = "none";
+    } else {
+      alert("Erreur lors de l'enregistrement.");
+    }
+  } catch (err) {
+    alert("Erreur de connexion.");
+    console.error(err);
+  }
+});
