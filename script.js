@@ -16,7 +16,7 @@
  if (socialLinks) socialLinks.remove();
     if (pedDePage) pedDePage.remove();
       // Chargement des données
-     fetch("https://script.google.com/macros/s/AKfycbzDeSDfYzb_953duQ-HuubILeZfzoRrtNe7d2Z7MEQbvVH9tzFZ1Dm0xTSHyZEgl7BIzg/exec?page=api")
+     fetch("https://script.google.com/macros/s/AKfycbwoTyj8mpGYPfWCOxszGA-SPYTSBsJbJoHyFKgIr-b5xSAu-CO9pgE3bCebLGAWCVDnPg/exec?page=api")
   .then(response => response.json())
   .then(data => {
     displayProduits(data);
@@ -709,13 +709,14 @@ ${(() => {
     return;
   }
 
-  let message = `Olá! Mwen vle rechaje:\n` + 
-                `${currentProduct.nom}\n`;
+  let message = `Olá, Gostaria de solicitar, fazer ou saber mais sobre este produto: ${currentProduct.nom}\n` +
+                `Codigo : ${currentProduct.code}\n` +
+                `Preco : R$ ${currentProduct.prix}`;
 
   if (currentProduct.selectedSize) {
-    message += `\nDesc : ${currentProduct.selectedSize}`;
+    message += `\nT/Desc : ${currentProduct.selectedSize}`;
   } else if (sizesArray.length === 1) {
-    message += `\nDesc : ${sizesArray[0]}`;
+    message += `\nT/Desc : ${sizesArray[0]}`;
   }
 
   window.open(`https://wa.me/916204805?text=${encodeURIComponent(message)}`, '_blank');
@@ -848,45 +849,3 @@ function initLogoTouchHandler(logo) {
 }
 
 document.addEventListener('DOMContentLoaded', waitForLogoAndInit);
-
-//==================================================================================
-//===============================================================================
-document.addEventListener("DOMContentLoaded", () => {
-  // Vérifie si l’utilisateur est déjà enregistré
-  if (!localStorage.getItem("registeredUser")) {
-    const popup = document.getElementById("registerPopup");
-    popup.style.display = "flex";
-
-    document.getElementById("registerBtn").addEventListener("click", () => {
-      const nom = document.getElementById("userName").value.trim();
-      const tel = document.getElementById("userPhone").value.trim();
-      const email = document.getElementById("userEmail").value.trim();
-
-      if (!nom || !tel || !email) {
-        alert("Merci de remplir tous les champs.");
-        return;
-      }
-
-      const data = { nom, tel, email };
-
-      fetch("https://script.google.com/macros/s/AKfycbzDeSDfYzb_953duQ-HuubILeZfzoRrtNe7d2Z7MEQbvVH9tzFZ1Dm0xTSHyZEgl7BIzg/exec?action=saveRegistration", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
-      })
-      .then(res => res.json())
-      .then(response => {
-        if (response.success) {
-          localStorage.setItem("registeredUser", "true");
-          alert("✅ Inscription réussie !");
-          popup.style.display = "none";
-        } else {
-          alert("❌ Erreur : " + response.message);
-        }
-      })
-      .catch(err => {
-        alert("⚠️ Problème de connexion : " + err.message);
-      });
-    });
-  }
-});
