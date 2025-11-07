@@ -854,7 +854,7 @@ document.addEventListener('DOMContentLoaded', waitForLogoAndInit);
 const popup = document.getElementById("popup");
 const enregistrerBtn = document.getElementById("enregistrerBtn");
 
-const GAS_URL = "https://script.google.com/macros/s/TON_SCRIPT_ID/exec"; // change ici
+const GAS_URL = "https://script.google.com/macros/s/AKfycbzDeSDfYzb_953duQ-HuubILeZfzoRrtNe7d2Z7MEQbvVH9tzFZ1Dm0xTSHyZEgl7BIzg/exec"; // change ici
 
 // Afficher le popup seulement la première fois
 window.addEventListener("load", async () => {
