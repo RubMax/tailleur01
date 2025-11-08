@@ -1,964 +1,223 @@
- window.deferredPrompt = window.deferredPrompt || null;
+<script>
+window.deferredPrompt = window.deferredPrompt || null;
 
-    // Variable globale pour stocker les détails du produit actuel
-    let currentProduct = {};
-    let pubItems = [];
-    let currentPubIndex = 0;
-    let pubTimeout;
-    
-    // Variables pour la galerie d'images
-    let currentImageIndex = 0;
-    let imageUrls = [];
-    
-    document.addEventListener('DOMContentLoaded', function() {
-        const socialLinks = document.querySelector('.social-links');
-    const pedDePage = document.getElementById('ped de page');
- if (socialLinks) socialLinks.remove();
-    if (pedDePage) pedDePage.remove();
-      // Chargement des données
-     fetch("https://script.google.com/macros/s/AKfycbyRHCuLb0IC_fLpQs36UW_zzgnwmDHAJtDZHByZjz3rxHieXr-Xw54yt5NvCEZgzk64xQ/exec?page=api")
-  .then(response => response.json())
-  .then(data => {
-    displayProduits(data);
-  })
-  .catch(error => {
-    document.getElementById("produits").innerHTML =
-      "<div class='alert alert-danger'>Erreur de chargement des données</div>";
-    console.error(error);
-  });
+// Variables globales
+let currentProduct = {};
+let pubItems = [];
+let currentPubIndex = 0;
+let pubTimeout;
+let currentImageIndex = 0;
+let imageUrls = [];
 
-      
-      // Initialiser le défilement horizontal
-      setupHorizontalDragScroll();
+// ✅ Exécuter une seule fois au chargement
+document.addEventListener("DOMContentLoaded", function () {
+  // Supprimer éléments inutiles
+  const socialLinks = document.querySelector(".social-links");
+  const pedDePage = document.getElementById("ped de page");
+  if (socialLinks) socialLinks.remove();
+  if (pedDePage) pedDePage.remove();
+
+  // ✅ Afficher popup de registre à l’ouverture
+  const regPopup = document.getElementById("reg-popup");
+  if (regPopup) {
+    regPopup.style.display = "flex";
+  }
+
+  // Charger les données de la feuille Google
+  fetch("https://script.google.com/macros/s/AKfycbyRHCuLb0IC_fLpQs36UW_zzgnwmDHAJtDZHByZjz3rxHieXr-Xw54yt5NvCEZgzk64xQ/exec?page=api")
+    .then((response) => response.json())
+    .then((data) => {
+      displayProduits(data);
+    })
+    .catch((error) => {
+      document.getElementById("produits").innerHTML =
+        "<div class='alert alert-danger'>Erreur de chargement des données</div>";
+      console.error(error);
     });
 
-    function triggerScrollPulse() {
-    const el = document.querySelector('.old-price');
+  // Activer défilement horizontal
+  setupHorizontalDragScroll();
+});
 
-    // Stopper l’animation subtile
-    el.classList.add('pause-subtle');
+function setupHorizontalDragScroll() {
+  const container = document.getElementById("nav-container");
+  const content = document.getElementById("section-nav");
+  if (!container || !content) return;
 
-    // Déclencher scrollPulse
-    el.classList.add('animate-badge');
+  let pos = { left: 0, x: 0 };
+  let isDragging = false;
 
-    // Après 2s, retirer l’animation scrollPulse et relancer subtlePulse
-    setTimeout(() => {
-        el.classList.remove('animate-badge');
-        el.classList.remove('pause-subtle');
-    }, 2000);
-}
+  // Souris
+  content.addEventListener("mousedown", (e) => {
+    isDragging = true;
+    pos = { left: container.scrollLeft, x: e.clientX };
+    content.classList.add("grabbing");
+    e.preventDefault();
+  });
 
+  document.addEventListener("mousemove", (e) => {
+    if (!isDragging) return;
+    const dx = e.clientX - pos.x;
+    container.scrollLeft = pos.left - dx;
+  });
 
-    function setupHorizontalDragScroll() {
-      const container = document.getElementById('nav-container');
-      const content = document.getElementById('section-nav');
-      
-      let pos = { left: 0, x: 0 };
-      let isDragging = false;
-      
-      // Souris
-      content.addEventListener('mousedown', function(e) {
-        isDragging = true;
-        pos = {
-          left: container.scrollLeft,
-          x: e.clientX
-        };
-        content.classList.add('grabbing');
-        e.preventDefault();
-      });
-      
-      document.addEventListener('mousemove', function(e) {
-        if (!isDragging) return;
-        const dx = e.clientX - pos.x;
-        container.scrollLeft = pos.left - dx;
-      });
-      
-      document.addEventListener('mouseup', function() {
-        isDragging = false;
-        content.classList.remove('grabbing');
-      });
-      
-      // Tactile
-      content.addEventListener('touchstart', function(e) {
-        isDragging = true;
-        pos = {
-          left: container.scrollLeft,
-          x: e.touches[0].clientX
-        };
-        content.classList.add('grabbing');
-      }, { passive: false });
-      
-      document.addEventListener('touchmove', function(e) {
-        if (!isDragging) return;
-        const dx = e.touches[0].clientX - pos.x;
-        container.scrollLeft = pos.left - dx;
-        e.preventDefault();
-      }, { passive: false });
-      
-      document.addEventListener('touchend', function() {
-        isDragging = false;
-        content.classList.remove('grabbing');
-      });
-    }
-    
-function createSectionButtons(sections) {
-  const navContainer = document.getElementById('section-nav');
-  navContainer.innerHTML = '';
+  document.addEventListener("mouseup", () => {
+    isDragging = false;
+    content.classList.remove("grabbing");
+  });
 
-  sections.forEach((section, index) => {
-    const sectionId = generateSectionId(section);
-    const button = document.createElement('a');
-    button.href = `#${sectionId}`;
-    button.textContent = section.toUpperCase();
-    button.className = 'section-btn';
+  // Tactile
+  content.addEventListener(
+    "touchstart",
+    (e) => {
+      isDragging = true;
+      pos = { left: container.scrollLeft, x: e.touches[0].clientX };
+      content.classList.add("grabbing");
+    },
+    { passive: false }
+  );
 
-    button.addEventListener('click', function(e) {
+  document.addEventListener(
+    "touchmove",
+    (e) => {
+      if (!isDragging) return;
+      const dx = e.touches[0].clientX - pos.x;
+      container.scrollLeft = pos.left - dx;
       e.preventDefault();
+    },
+    { passive: false }
+  );
 
-      // Retirer "active" des autres boutons
-      document.querySelectorAll('.section-btn').forEach(btn => btn.classList.remove('active'));
-      button.classList.add('active');
-
-      // Faire défiler jusqu’à la section voulue
-      document.getElementById(sectionId).scrollIntoView({ behavior: "smooth" });
-    });
-
-    navContainer.appendChild(button);
-
-    // Activer automatiquement la première section
-    if (index === 0) {
-      button.classList.add('active');
-      setTimeout(() => {
-        document.getElementById(sectionId).scrollIntoView({ behavior: "instant" });
-      }, 100);
-    }
+  document.addEventListener("touchend", () => {
+    isDragging = false;
+    content.classList.remove("grabbing");
   });
 }
 
-
-
-    
-    /**
- * Génère un ID de section à partir d'un nom
- * @param {string} sectionName - Le nom de la section à transformer
- * @param {object} options - Options de configuration
- * @param {string} [options.separator='-'] - Séparateur à utiliser
- * @param {boolean} [options.preserveCase=false] - Conserver la casse originale
- * @param {boolean} [options.allowUnderscores=false] - Autoriser les underscores
- * @param {number} [options.maxLength=0] - Longueur maximale (0 = illimitée)
- * @returns {string} L'ID généré
- */
 function generateSectionId(sectionName) {
   return sectionName
     .toLowerCase()
-    .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // Supprimer les accents
-    .replace(/[^a-z0-9]+/g, '-') // Remplacer les caractères spéciaux par des tirets
-    .replace(/(^-|-$)/g, ''); // Supprimer les tirets en début et fin
-} 
-    
-    document.addEventListener('DOMContentLoaded', () => {
-  // Afficher la première section au démarrage
-  const firstTitle = document.querySelector('h2');
-  const firstContainer = firstTitle?.nextElementSibling;
-
-  if (firstTitle && firstContainer) {
-    firstTitle.style.display = 'block';
-    firstContainer.style.display = 'block';
-  }
-});
-
-function scrollToSection(sectionId) {
-  const allSections = document.querySelectorAll('.section-container');
-  const allTitles = document.querySelectorAll('h2');
-
-  const firstSectionId = allTitles[0]?.id;
-
-  // Durées plus lentes
-  const fadeDuration = 2400;   // fade-in plus lent
-  const scrollDelay = 100;      // petit délai avant le scroll
-
-  // Fonction fade-in lente
-  function fadeIn(element, duration) {
-    element.style.opacity = 0;
-    element.style.display = 'block';
-    element.style.transition = `opacity ${duration}ms`;
-    requestAnimationFrame(() => {
-      element.style.opacity = 1;
-    });
-  }
-
-  if (sectionId === firstSectionId) {
-    // Affiche toutes les sections
-    allTitles.forEach(title => title.style.display = 'block');
-    allSections.forEach(section => fadeIn(section, fadeDuration));
-
-    // Défile tout en haut
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  } else {
-    // Masque toutes les sections sauf celle sélectionnée
-    allTitles.forEach(title => {
-      title.style.display = (title.id === sectionId) ? 'block' : 'none';
-    });
-
-    allSections.forEach((section, i) => {
-      const title = allTitles[i];
-      if (title.id === sectionId) {
-        fadeIn(section, fadeDuration);
-      } else {
-        section.style.display = 'none';
-      }
-    });
-
-    // Défile vers la section visible
-    const selectedTitle = document.getElementById(sectionId);
-    if (selectedTitle) {
-      setTimeout(() => {
-        selectedTitle.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, scrollDelay);
-    }
-  }
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
 }
 
-
-function handleScroll() {
-  const header = document.querySelector('.fixed-header');
-  const headerHeight = header ? header.offsetHeight : 0;
-  const scrollPosition = window.scrollY + headerHeight + 20;
-
-  // Ne considérer que les titres visibles et qui ont un id
-  const sections = [...document.querySelectorAll('h2')]
-    .filter(s => s.offsetParent !== null && s.id);
-
-  if (sections.length === 0) return;
-
-  let activeFound = false;
-
-  sections.forEach(section => {
-    const rect = section.getBoundingClientRect();
-    const sectionTop = window.scrollY + rect.top;
-    const sectionHeight = section.offsetHeight;
-    const sectionId = section.id;
-
-    if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
-      // retirer "active" de tous les boutons
-      document.querySelectorAll('.section-btn').forEach(btn => btn.classList.remove('active'));
-
-      // sécuriser l'id dans le sélecteur
-      const selector = `.section-btn[href="#${CSS.escape(sectionId)}"]`;
-      const activeBtn = document.querySelector(selector);
-      if (activeBtn) activeBtn.classList.add('active');
-
-      activeFound = true;
-    }
-  });
-
-  // Si aucune section trouvée et qu'on est en bas de page, activer la dernière section visible
-  if (!activeFound) {
-    const scrollBottom = window.scrollY + window.innerHeight;
-    if (document.documentElement.scrollHeight - scrollBottom < 5) {
-      const last = sections[sections.length - 1];
-      if (last) {
-        document.querySelectorAll('.section-btn').forEach(btn => btn.classList.remove('active'));
-        const selector = `.section-btn[href="#${CSS.escape(last.id)}"]`;
-        const activeBtn = document.querySelector(selector);
-        if (activeBtn) activeBtn.classList.add('active');
-      }
-    }
-  }
+// === POPUP REG ===
+function closeRegPopup() {
+  const regPopup = document.getElementById("reg-popup");
+  if (regPopup) regPopup.style.display = "none";
 }
 
-    
-    
+// === AFFICHAGE DES PRODUITS ===
 function displayProduits(data) {
-  const container = document.getElementById('produits');
-  container.innerHTML = "";
-  const sections = [...new Set(data.map(item => item.section))];
+  const container = document.getElementById("produits");
+  if (!container) return;
 
-  // Filtrer les pubs valides
-  pubItems = data.filter(item => item.pub && item.pub.trim() !== '');
+  container.innerHTML = "";
+  const sections = [...new Set(data.map((item) => item.section))];
+  pubItems = data.filter((item) => item.pub && item.pub.trim() !== "");
 
   createSectionButtons(sections);
 
-  sections.forEach(section => {
+  sections.forEach((section) => {
     const sectionId = generateSectionId(section);
-    const h2 = document.createElement('h2');
-    h2.textContent = section.toUpperCase(); // <-- Ajouté pour mettre le titre en majuscule
+    const h2 = document.createElement("h2");
+    h2.textContent = section.toUpperCase();
     h2.id = sectionId;
     container.appendChild(h2);
 
-    const sectionContainer = document.createElement('div');
+    const sectionContainer = document.createElement("div");
     sectionContainer.className = "section-container";
     container.appendChild(sectionContainer);
 
     data
-      .filter(p => p.section === section)
-      .forEach(produit => {
-       const div = document.createElement('div');
-const hasImage = produit.image && produit.image.trim() !== '';
-div.className = "article produit-ligne" + (hasImage ? "" : " no-image");
+      .filter((p) => p.section === section)
+      .forEach((produit) => {
+        const div = document.createElement("div");
+        const hasImage = produit.image && produit.image.trim() !== "";
+        div.className =
+          "article produit-ligne" + (hasImage ? "" : " no-image");
 
-        const descriptionHtml = produit.description.replace(/\n/g, '<br>');
+        const descriptionHtml = produit.description.replace(/\n/g, "<br>");
         const descriptionParam = encodeURIComponent(produit.description);
 
         div.innerHTML = `
           ${hasImage ? `
-  <div class="article-image">
-    <img src="${escapeHtml(produit.image)}" 
-         alt="${escapeHtml(produit.nom)}" 
-         onclick="showPopup('${escapeHtml(produit.image)}', '${escapeHtml(produit.nom)}', '${descriptionParam}', '${escapeHtml(produit.prix)}', '${escapeHtml(produit.tailles)}', '${escapeHtml(produit.code)}')">
-  </div>
-` : ''}
-
-
+            <div class="article-image">
+              <img src="${escapeHtml(produit.image)}"
+                   alt="${escapeHtml(produit.nom)}"
+                   onclick="showPopup('${escapeHtml(produit.image)}', '${escapeHtml(produit.nom)}', '${descriptionParam}', '${escapeHtml(produit.prix)}', '${escapeHtml(produit.tailles)}', '${escapeHtml(produit.code)}')">
+            </div>` : ""}
           <div class="article-details">
-            <h3 style="text-transform: uppercase" onclick="showPopup('${escapeHtml(produit.image)}', '${escapeHtml(produit.nom)}', '${descriptionParam}', '${escapeHtml(produit.prix)}', '${escapeHtml(produit.tailles)}', '${escapeHtml(produit.code)}')">${escapeHtml(produit.nom)}</h3>
-
-            
-
+            <h3 style="text-transform: uppercase"
+                onclick="showPopup('${escapeHtml(produit.image)}', '${escapeHtml(produit.nom)}', '${descriptionParam}', '${escapeHtml(produit.prix)}', '${escapeHtml(produit.tailles)}', '${escapeHtml(produit.code)}')">
+              ${escapeHtml(produit.nom)}
+            </h3>
             <div class="details">
-  ${produit.prix ? (() => {
-  try {
-    if (produit.prix.includes('-')) {
-      const [oldPrice, newPrice] = produit.prix.split('-').map(p => escapeHtml(p.trim()));
-      return `
-        <div class="price-container">
-          <span class="old-price">R$ ${oldPrice}</span>
-          <span class="new-price">R$ ${newPrice}</span>
-        </div>
-      `;
-    }
-    return `<p>R$ <strong>${escapeHtml(produit.prix)}</strong></p>`;
-  } catch (e) {
-    return `<p>R$ <strong>${escapeHtml(produit.prix)}</strong></p>`;
-  }
-})() : ''}
-
-${(() => {
-  let note = '';
-  let taillesNettoyees = produit.tailles;
-
-  // Extraire le texte entre parenthèses (s'il existe)
-  const match = produit.tailles.match(/\(([^)]+)\)/);
-  if (match) {
-    note = match[1];
-    taillesNettoyees = produit.tailles.replace(/\([^)]*\)/g, '').trim();
-  }
-
-  // Séparer et formater les tailles avec encadrement
-  const taillesArray = taillesNettoyees.split(',')
-    .map(t => t.trim())
-    .filter(t => t !== '');
-
-  const taillesEncadrees = taillesArray.map(taille => 
-  `<span class="taille-encadree">🔹 ${escapeHtml(taille)}</span>`
-).join(' ');
-
-  return `
-    ${note ? `<p class="note-text"><strong>${escapeHtml(note)}</strong></p>` : ''}
-    ${taillesArray.length > 0 ? `
-      <div class="tailles-container">
-        ${taillesEncadrees}
-      </div>
-    ` : ''}
-  `;
-})()}
-<br>
-            <button class="open-button" onclick="showPopup('${escapeHtml(produit.image)}', '${escapeHtml(produit.nom)}', '${descriptionParam}', '${escapeHtml(produit.prix)}', '${escapeHtml(produit.tailles)}', '${escapeHtml(produit.code)}')">Solicite/Realise</button>
-            
-          
-
+              ${produit.prix ? `<p><strong>R$ ${escapeHtml(produit.prix)}</strong></p>` : ""}
+              <button class="open-button"
+                      onclick="showPopup('${escapeHtml(produit.image)}', '${escapeHtml(produit.nom)}', '${descriptionParam}', '${escapeHtml(produit.prix)}', '${escapeHtml(produit.tailles)}', '${escapeHtml(produit.code)}')">
+                Solicite/Realise
+              </button>
+            </div>
           </div>
         `;
         sectionContainer.appendChild(div);
       });
   });
 
-  // Démarrer le carrousel de pubs si il y a des pubs
-  if (pubItems.length > 0) {
-    startPubCarousel();
-  }
-
-  if (window.location.hash) {
-    const sectionId = window.location.hash.substring(1);
-    setTimeout(() => {
-      scrollToSection(sectionId);
-    }, 300);
-  }
+  if (pubItems.length > 0) startPubCarousel();
 }
 
+// === PUBS ===
+function startPubCarousel() {
+  if (pubItems.length === 0) return;
+  currentPubIndex = 0;
+  scheduleNextPub();
+}
 
-    
-    
-     function startPubCarousel() {
-      if (pubItems.length === 0) return;
-      
-      currentPubIndex = 0;
-      scheduleNextPub();
-    }
-    
-    function scheduleNextPub() {
-      clearTimeout(pubTimeout);
-      
-      const currentPub = pubItems[currentPubIndex];
-      const delay = currentPub.pubInterval || 25000; // Valeur par défaut 25s
-      
-      pubTimeout = setTimeout(() => {
-        showCurrentPub();
-        currentPubIndex = (currentPubIndex + 1) % pubItems.length;
-        scheduleNextPub();
-      }, delay);
-    }
-
-   function showCurrentPub() {
+function scheduleNextPub() {
+  clearTimeout(pubTimeout);
   const currentPub = pubItems[currentPubIndex];
-  const parts = currentPub.pub.split('|');
-  
-  // Nouveau format: texte_gras|image|texte
+  const delay = currentPub.pubInterval || 25000;
+  pubTimeout = setTimeout(() => {
+    showCurrentPub();
+    currentPubIndex = (currentPubIndex + 1) % pubItems.length;
+    scheduleNextPub();
+  }, delay);
+}
+
+function showCurrentPub() {
+  const currentPub = pubItems[currentPubIndex];
+  const parts = currentPub.pub.split("|");
   const boldText = parts[0] ? parts[0].trim() : null;
   const imageUrl = parts[1] ? parts[1].trim() : null;
   const text = parts[2] ? parts[2].trim() : null;
-  
-  let htmlContent = '<div class="pub-header" style="color: #ff0000; font-weight: bold; font-size: 2rem; margin-bottom: 0.5rem; text-align: center;">ANÚNCIO</div>';
-  
-  // Ajouter le texte en gras s'il existe
-  if (boldText) {
-    htmlContent += `<div class="pub-bold-text" style="font-weight: bold; font-size: 2rem; margin-bottom: 1rem;">
-                    ${escapeHtml(boldText).replace(/\n/g, '<br>')}
-                   </div>`;
-  }
-  
-  // Ajouter l'image si elle existe
-  if (imageUrl) {
-    htmlContent += `<img src="${escapeHtml(imageUrl)}" class="pub-image" alt="Publicité">`;
-  }
-  
-  // Ajouter le texte normal s'il existe
-  if (text) {
-    htmlContent += `<div class="pub-text">${escapeHtml(text).replace(/\n/g, '<br>')}</div>`;
-  }
-  
-  document.getElementById('pub-container').innerHTML = htmlContent;
-  updatePubDots();
-  document.getElementById('pub-popup').style.display = 'flex';
+
+  let html = "<div class='pub-header'>ANÚNCIO</div>";
+  if (boldText) html += `<div class='pub-bold'>${escapeHtml(boldText)}</div>`;
+  if (imageUrl) html += `<img src='${escapeHtml(imageUrl)}' class='pub-image'>`;
+  if (text) html += `<div class='pub-text'>${escapeHtml(text)}</div>`;
+
+  const popup = document.getElementById("pub-popup");
+  const dots = document.getElementById("pub-dots");
+  if (!popup) return;
+
+  popup.innerHTML = html;
+  if (dots) updatePubDots();
+  popup.style.display = "flex";
 }
-    
-    function updatePubDots() {
-      const dotsContainer = document.getElementById('pub-dots');
-      dotsContainer.innerHTML = '';
-      
-      pubItems.forEach((_, index) => {
-        const dot = document.createElement('span');
-        dot.className = `pub-dot ${index === currentPubIndex ? 'active' : ''}`;
-        dot.onclick = () => {
-          currentPubIndex = index;
-          showCurrentPub();
-          scheduleNextPub();
-        };
-        dotsContainer.appendChild(dot);
-      });
-    }
-    
-    function closePubPopup() {
-      document.getElementById('pub-popup').style.display = 'none';
-    }
-    
-    
-    
-    
-    function escapeHtml(text) {
-      return text
+
+// === UTILITAIRES ===
+function escapeHtml(text) {
+  return text
+    ? text
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-    }
-    
-    function showDescriptionPopup(encodedDescription) {
-  const description = decodeURIComponent(encodedDescription).replace(/\n/g, '<br>');
-  const descriptionContent = document.getElementById("description-content");
-  descriptionContent.innerHTML = description;
-  descriptionContent.style.fontSize = "50px";  // 👈 Taille du texte à 40px
-  document.getElementById("description-popup").style.display = "flex";
-  document.querySelector('.description-popup-close').style.fontSize = '40px';
-
+        .replace(/'/g, "&#039;")
+    : "";
 }
-
-    
-    function closeDescriptionPopup() {
-      document.getElementById("description-popup").style.display = "none";
-    }
-    
-    
-    /* Fonctions pour la galerie d'images */
-  function showPopup(imageUrl, nom, description, prix, tailles, code, hideWhatsappButton = false) {
-  // Supprimer la première image de la galerie
-  imageUrls = imageUrl.split(',').map(url => url.trim()).slice(1); // 👈 ici
-  
-  currentImageIndex = 0;
-  document.getElementById("popup").style.display = "flex";
-
-  // Supprimer les textes entre parenthèses dans "tailles"
-  const cleanedTailles = tailles.replace(/\([^)]*\)/g, '').trim();
-  const sizesArray = cleanedTailles.split(',').map(size => size.trim()).filter(size => size !== '');
-  const hasMultipleSizes = sizesArray.length > 1;
-
-  // Stocker les détails du produit dans la variable globale
-  currentProduct = {
-    imageUrl,
-    nom,
-    description,
-    prix,
-    tailles,
-    code,
-    selectedSize: hasMultipleSizes ? null : sizesArray[0]
-  };
-
-  updateGallery();
-
-  let sizesHTML = '';
-  if (hasMultipleSizes) {
-    sizesHTML = `
-  <p></p>
-  <div class="sizes-list" id="sizes-container">
-    ${sizesArray.map(size => `
-      <span class="size-item" onclick="selectSize(this, '${escapeHtml(size)}')">${escapeHtml(size)}</span>
-    `).join('')}
-  </div>
-`;
-  } else if (sizesArray.length === 1) {
-    sizesHTML = `
-      <p><strong>${escapeHtml(sizesArray[0])}</strong></p>
-    `;
-  } else {
-    sizesHTML = ``;
-  }
-
-  // Mettre à jour le contenu du popup
-  document.getElementById("popup-details").innerHTML = `
-    <h4>${escapeHtml(nom)}</h4>
-    
-    ${prix?.trim() ? (() => {
-      // Vérifie si le prix contient un séparateur "-"
-      if (prix.includes('-')) {
-        const [oldPrice, newPrice] = prix.split('-').map(p => p.trim());
-        return `
-          <div class="price-highlight">
-            <div class="dual-price-container">
-              <div class="old-price">
-                <span class="currency-symbol">R$</span>
-                <span class="price-amount">${escapeHtml(oldPrice)}</span>
-              </div>
-              <div class="new-price">
-                <span class="currency-symbol">R$</span>
-                <span class="price-amount">${escapeHtml(newPrice)}</span>
-              </div>
-            </div>
-          </div>
-        `;
-      }
-      // Cas normal (un seul prix)
-      return `
-        <div class="price-highlight">
-          <span class="currency-symbol">R$</span>
-          <span class="price-amount">${escapeHtml(prix)}</span>
-        </div>
-      `;
-    })() : ''}
-    
-    <div>
-      ${sizesHTML}
-    </div>
-    
-    
-
-    <div">
-      <strong>Solicite ou realize este serviço no Whatsapp:</strong>
-    </div>
-     <br>
-    <a href="#" id="whatsappButton" class="whatsapp-btn" onclick="event.preventDefault(); sendWhatsAppMessage();">
-      <i class="fab fa-whatsapp"></i> WhatsApp
-    </a>
-<br>
-    <div">
-      <strong>Descrição:</strong>
-      <div class="description-text" color: #0081fe;">
-        ${decodeURIComponent(description).replace(/\n/g, '<br>')}
-      </div>
-    </div>
-  `;
-
-  // Afficher ou masquer le bouton WhatsApp selon le paramètre
-  const whatsappButton = document.getElementById("whatsappButton");
-  if (hideWhatsappButton) {
-    whatsappButton.style.display = "none";
-  } else {
-    whatsappButton.style.display = "inline-block";
-  }
-
-  // Sélection automatique de la taille si une seule
-  if (!hasMultipleSizes && sizesArray.length === 1) {
-    const sizeElements = document.querySelectorAll('.size-item');
-    if (sizeElements.length > 0) {
-      sizeElements[0].classList.add('selected');
-    }
-  }
-}
-
-    
-       function updateGallery() {
-      const galleryImages = document.getElementById('gallery-images');
-      const galleryDots = document.getElementById('gallery-dots');
-      
-      galleryImages.innerHTML = '';
-      galleryDots.innerHTML = '';
-      
-      imageUrls.forEach((url, index) => {
-        // Ajouter l'image
-        const img = document.createElement('img');
-        img.src = url;
-        img.alt = currentProduct.nom;
-        img.className = 'gallery-image';
-        galleryImages.appendChild(img);
-        
-        // Ajouter le point de navigation
-        const dot = document.createElement('span');
-        dot.className = 'gallery-dot' + (index === currentImageIndex ? ' active' : '');
-        dot.onclick = () => goToImage(index);
-        galleryDots.appendChild(dot);
-      });
-      
-      // Positionner la galerie sur l'image actuelle
-      galleryImages.style.transform = `translateX(-${currentImageIndex * 100}%)`;
-    }
-    
-    function prevImage() {
-      if (currentImageIndex > 0) {
-        currentImageIndex--;
-      } else {
-        currentImageIndex = imageUrls.length - 1;
-      }
-      updateGallery();
-    }
-    
-    function nextImage() {
-      if (currentImageIndex < imageUrls.length - 1) {
-        currentImageIndex++;
-      } else {
-        currentImageIndex = 0;
-      }
-      updateGallery();
-    }
-    
-    function goToImage(index) {
-      currentImageIndex = index;
-      updateGallery();
-    }
-    
-    // Gestion des glissements tactiles
-    let touchStartX = 0;
-    let touchEndX = 0;
-    
-    document.getElementById('gallery-images').addEventListener('touchstart', (e) => {
-      touchStartX = e.changedTouches[0].screenX;
-    }, {passive: true});
-    
-    document.getElementById('gallery-images').addEventListener('touchend', (e) => {
-      touchEndX = e.changedTouches[0].screenX;
-      handleSwipe();
-    }, {passive: true});
-    
-    function handleSwipe() {
-      const threshold = 50;
-      if (touchStartX - touchEndX > threshold) {
-        nextImage(); // Glissement vers la gauche
-      } else if (touchEndX - touchStartX > threshold) {
-        prevImage(); // Glissement vers la droite
-      }
-    }
-    
-    function selectSize(element, size) {
-  const sizeItems = document.querySelectorAll('.size-item');
-  sizeItems.forEach(item => item.classList.remove('selected'));
-  
-  element.classList.add('selected');
-  currentProduct.selectedSize = size;
-  
-  // Supprimer l'animation de secousse si elle était active
-  const sizesContainer = document.getElementById('sizes-container');
-  if (sizesContainer) {
-    sizesContainer.classList.remove('shake');
-  }
-}
-    
-   function sendWhatsAppMessage() {
-  const sizesArray = currentProduct.tailles.split(',').map(size => size.trim()).filter(size => size !== '');
-  const hasMultipleSizes = sizesArray.length > 1;
-  const sizesContainer = document.getElementById('sizes-container');
-
-  if (hasMultipleSizes && !currentProduct.selectedSize) {
-    // Ajouter l'animation de secousse
-    sizesContainer.classList.add('shake');
-
-    // Supprimer l'animation après 0.5s
-    setTimeout(() => {
-      sizesContainer.classList.remove('shake');
-    }, 500);
-
-    // Supprimer l'alerte visuelle
-    return;
-  }
-
-  let message = `Olá! Mwen vle rechaje:\n` + 
-                `${currentProduct.nom}\n`;
-
-  if (currentProduct.selectedSize) {
-    message += `\nDesc : ${currentProduct.selectedSize}`;
-  } else if (sizesArray.length === 1) {
-    message += `\nDesc : ${sizesArray[0]}`;
-  }
-
-  window.open(`https://wa.me/916204805?text=${encodeURIComponent(message)}`, '_blank');
-}
-
-function closePopup() {
-  const popup = document.getElementById("popup");
-  if (popup) {
-    popup.style.display = "none";
-  }
-}
-
-    function showCustomAlert(message) {
-  const alertBox = document.createElement('div');
-  alertBox.style.position = 'fixed';
-  alertBox.style.top = '50%';
-  alertBox.style.left = '50%';
-  alertBox.style.transform = 'translate(-50%, -50%)';
-  alertBox.style.backgroundColor = '#fff'; // blanc complet
-  alertBox.style.color = '#000'; // texte noir
-  alertBox.style.padding = '20px';
-  alertBox.style.border = '2px solid #333';
-  alertBox.style.zIndex = '9999';
-  alertBox.style.fontSize = '40px';
-  alertBox.style.textAlign = 'center';
-  alertBox.style.borderRadius = '8px';
-  alertBox.style.boxShadow = '0 0 20px rgba(0,0,0,0.5)';
-  alertBox.innerHTML = `
-    <p style="margin: 0; font-size: 40px;">${message}</p>
-    <button id="close-alert" style="
-      margin-top: 15px;
-      padding: 10px 20px;
-      font-size: 40px;
-      background-color: #333;
-      color: #fff;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    ">OK</button>
-  `;
-
-  document.body.appendChild(alertBox);
-
-  document.getElementById('close-alert').addEventListener('click', () => {
-    document.body.removeChild(alertBox);
-  });
-}
-
-    
-    
-
-
-
-
-document.addEventListener('DOMContentLoaded', () => {
-  const logo = document.getElementById('logo');
-
-  if (!logo) {
-    console.warn("⚠️ Élément #logo introuvable !");
-    return;
-  }
-
-  let tapCount = 0;
-  let lastTapTime = 0;
-  const maxDelay = 600; // délai max entre 2 taps
-
-  logo.addEventListener('touchstart', () => {
-    const now = Date.now();
-
-    if (now - lastTapTime < maxDelay) {
-      tapCount++;
-    } else {
-      tapCount = 1; // recommencer si trop lent
-    }
-
-    lastTapTime = now;
-
-    if (tapCount === 3) {
-      tapCount = 0;
-
-      fetch('https://script.google.com/macros/s/AKfycbwoTyj8mpGYPfWCOxszGA-SPYTSBsJbJoHyFKgIr-b5xSAu-CO9pgE3bCebLGAWCVDnPg/exec?page=popupWelcome')
-        .then(response => response.text())
-        .then(content => {
-          document.querySelector('#popup-welcome .popup-content p').innerText = content;
-          document.getElementById('popup-welcome').style.display = 'flex';
-        })
-        .catch(err => {
-          console.error('Erreur chargement contenu :', err);
-        });
-    }
-  });
-});
-
-
-function waitForLogoAndInit() {
-  const logo = document.getElementById('logo');
-  if (!logo) {
-    setTimeout(waitForLogoAndInit, 100); // réessaye après 100ms
-    return;
-  }
-
-  initLogoTouchHandler(logo);
-}
-
-function initLogoTouchHandler(logo) {
-  let tapCount = 0;
-  let lastTap = 0;
-
-  logo.addEventListener('touchstart', () => {
-    const now = Date.now();
-    if (now - lastTap < 600) {
-      tapCount++;
-    } else {
-      tapCount = 1;
-    }
-    lastTap = now;
-
-    if (tapCount === 3) {
-      tapCount = 0;
-      console.log("🎉 3 taps détectés !");
-
-      fetch('https://script.google.com/macros/s/AKfycbwoTyj8mpGYPfWCOxszGA-SPYTSBsJbJoHyFKgIr-b5xSAu-CO9pgE3bCebLGAWCVDnPg/exec?page=popupWelcome')
-        .then(r => r.text())
-        .then(content => {
-          document.querySelector('#popup-welcome .popup-content p').innerText = content;
-          document.getElementById('popup-welcome').style.display = 'flex';
-        });
-    }
-  });
-}
-
-document.addEventListener('DOMContentLoaded', waitForLogoAndInit);
-
-//==========================================================
-//==========================================================
-
-const apiURL = "https://script.google.com/macros/s/AKfycbx8WW1QSZ4Z4_AR60hCaorzCPRVRALGIOCsZu_9gTTOgEWd4mzfvv0eOetNIkR4tTVQDg/exec";
-
-
-// 🔍 Vérifie si le site a déjà été ouvert sur ce téléphone
-function dejaEnregistre() {
-  return localStorage.getItem("clientEnregistre") === "true";
-}
-
-// 📱 Vérifie si c’est un appareil mobile
-function estMobile() {
-  return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-}
-
-window.onload = async function () {
-  const popup = document.getElementById("reg-popup");
-  const main = document.getElementById("main-content");
-
-  // Si déjà enregistré ou si c'est un ordinateur → on saute le popup
-  if (dejaEnregistre() || !estMobile()) {
-    popup.style.display = "none";
-    main.style.display = "block";
-    return;
-  }
-
-  // Charge la liste des agents
-  try {
-    const res = await fetch(`${apiURL}?action=getAgents`);
-    const agents = await res.json();
-    const select = document.getElementById("agent");
-
-    agents.forEach(a => {
-      const opt = document.createElement("option");
-      opt.value = a;
-      opt.textContent = a;
-      select.appendChild(opt);
-    });
-  } catch (err) {
-    alert("Erreur de connexion au serveur. Vérifie ta connexion Internet.");
-  }
-
-  popup.style.display = "flex";
-};
-
-// 🧠 Vérifie les champs
-function validerChamps(nom, tel, email, agent) {
-  if (!nom || !tel || !email || !agent) {
-    alert("Veuillez remplir tous les champs !");
-    return false;
-  }
-
-  if (!/^[\w\.-]+@[\w\.-]+\.\w+$/.test(email)) {
-    alert("Email invalide !");
-    return false;
-  }
-
-  if (!/^\+?\d{6,15}$/.test(tel)) {
-    alert("Numéro de téléphone invalide !");
-    return false;
-  }
-
-  return true;
-}
-
-// ⚙️ Quand on clique sur “S’enregistrer”
-document.getElementById("enregistrer").addEventListener("click", async () => {
-  const nom = document.getElementById("nom").value.trim();
-  const tel = document.getElementById("tel").value.trim();
-  const email = document.getElementById("email").value.trim();
-  const agent = document.getElementById("agent").value;
-
-  if (!validerChamps(nom, tel, email, agent)) return;
-
-  const bouton = document.getElementById("enregistrer");
-  bouton.disabled = true;
-  bouton.textContent = "⏳ Enregistrement...";
-
-  try {
-    const params = new URLSearchParams({
-      action: "saveClient",
-      nom,
-      tel,
-      email,
-      agent
-    });
-
-    const res = await fetch(`${apiURL}?${params.toString()}`);
-    const text = await res.text();
-
-    if (text === "OK") {
-      // Sauvegarde locale
-      localStorage.setItem("clientEnregistre", "true");
-      localStorage.setItem("nom", nom);
-      localStorage.setItem("tel", tel);
-      localStorage.setItem("email", email);
-      localStorage.setItem("agent", agent);
-
-      alert("✅ Enregistrement réussi !");
-      document.getElementById("popup").style.display = "none";
-      document.getElementById("main-content").style.display = "block";
-    } else {
-      alert("❌ Erreur lors de l’enregistrement. Réessaie !");
-    }
-
-  } catch (err) {
-    alert("Erreur de connexion : " + err.message);
-  } finally {
-    bouton.disabled = false;
-    bouton.textContent = "S’enregistrer";
-  }
-});
+</script>
