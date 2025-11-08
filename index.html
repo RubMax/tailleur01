@@ -49,12 +49,12 @@
     <!-- En-tête fixe -->
     <div class="fixed-header">
       <div class="logo-container" style="display: flex">
-        <img id="logo" class="logo-img">
+        <p style="font-weight: bold; color: blue; font-size: 20px;"><strong>RECARGA INTERNACIONAL</strong></p>
         <button id="installBtn" style="
           background-color:;
           color: white;
           padding: 2px 2px;
-          font-size: 18px;
+          font-size: 20px;
           border: none;
           border-radius: 8px;
           box-shadow: 0 0 10px rgba(0,0,0,0.2);
@@ -126,26 +126,6 @@
     </div>
   </div><!-- /#app -->
 
-
-    <!-- Popup d'enregistrement -->
-  <!-- Popup d'enregistrement -->
-  <div id="popup" class="popup">
-    <div class="popup-content">
-      <h2>Inscription</h2>
-      <input type="text" id="nom" placeholder="Nom complet" required>
-      <input type="tel" id="tel" placeholder="Téléphone" required>
-      <input type="email" id="email" placeholder="Email" required>
-      <select id="agent" required>
-        <option value="">Choisir un agent...</option>
-      </select>
-      <button id="enregistrer">S’enregistrer</button>
-    </div>
-  </div>
-
-  <script sr
-
-  <scrip
-
   <script src="script.js" defer></script>
   <script src="install.js"></script>
 
@@ -155,7 +135,7 @@
       const app = document.getElementById("app");
       const logoEl = document.getElementById("logo");
 
-      const BASE = "https://script.google.com/macros/s/AKfycbwoTyj8mpGYPfWCOxszGA-SPYTSBsJbJoHyFKgIr-b5xSAu-CO9pgE3bCebLGAWCVDnPg/exec";
+      const BASE = "https://script.google.com/macros/s/AKfycbyRHCuLb0IC_fLpQs36UW_zzgnwmDHAJtDZHByZjz3rxHieXr-Xw54yt5NvCEZgzk64xQ/exec";
       const logoUrlAPI = BASE + "?page=logo";
       const dataUrlAPI = BASE + "?page=api";
 
@@ -196,5 +176,11 @@
   </script>
 </body>
 </html>
+
+
+
+
+
+
 
 
