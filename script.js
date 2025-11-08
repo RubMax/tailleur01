@@ -1,114 +1,3 @@
-const apiURL = "https://script.google.com/macros/s/AKfycbzDeSDfYzb_953duQ-HuubILeZfzoRrtNe7d2Z7MEQbvVH9tzFZ1Dm0xTSHyZEgl7BIzg/exec";
-
-
-
-// 🔍 Vérifie si le site a déjà été ouvert sur ce téléphone
-function dejaEnregistre() {
-  return localStorage.getItem("clientEnregistre") === "true";
-}
-
-// 📱 Vérifie si c’est un appareil mobile
-function estMobile() {
-  return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-}
-
-window.onload = async function () {
-  const popup = document.getElementById("reg-popup");
-  const main = document.getElementById("main-content2");
-
-  // Si déjà enregistré ou si c'est un ordinateur → on saute le popup
-  if (dejaEnregistre() || !estMobile()) {
-    popup.style.display = "none";
-    main.style.display = "block";
-    return;
-  }
-
-  // Charge la liste des agents
-  try {
-    const res = await fetch(`${apiURL}?action=getAgents`);
-    const agents = await res.json();
-    const select = document.getElementById("agent");
-
-    agents.forEach(a => {
-      const opt = document.createElement("option");
-      opt.value = a;
-      opt.textContent = a;
-      select.appendChild(opt);
-    });
-  } catch (err) {
-    alert("Erreur de connexion au serveur. Vérifie ta connexion Internet.");
-  }
-
-  popup.style.display = "flex";
-};
-
-// 🧠 Vérifie les champs
-function validerChamps(nom, tel, email, agent) {
-  if (!nom || !tel || !email || !agent) {
-    alert("Veuillez remplir tous les champs !");
-    return false;
-  }
-
-  if (!/^[\w\.-]+@[\w\.-]+\.\w+$/.test(email)) {
-    alert("Email invalide !");
-    return false;
-  }
-
-  if (!/^\+?\d{6,15}$/.test(tel)) {
-    alert("Numéro de téléphone invalide !");
-    return false;
-  }
-
-  return true;
-}
-
-// ⚙️ Quand on clique sur “S’enregistrer”
-document.getElementById("enregistrer").addEventListener("click", async () => {
-  const nom = document.getElementById("nom").value.trim();
-  const tel = document.getElementById("tel").value.trim();
-  const email = document.getElementById("email").value.trim();
-  const agent = document.getElementById("agent").value;
-
-  if (!validerChamps(nom, tel, email, agent)) return;
-
-  const bouton = document.getElementById("enregistrer");
-  bouton.disabled = true;
-  bouton.textContent = "⏳ Enregistrement...";
-
-  try {
-    const params = new URLSearchParams({
-      action: "saveClient",
-      nom,
-      tel,
-      email,
-      agent
-    });
-
-    const res = await fetch(`${apiURL}?${params.toString()}`);
-    const text = await res.text();
-
-    if (text === "OK") {
-      // Sauvegarde locale
-      localStorage.setItem("clientEnregistre", "true");
-      localStorage.setItem("nom", nom);
-      localStorage.setItem("tel", tel);
-      localStorage.setItem("email", email);
-      localStorage.setItem("agent", agent);
-
-      alert("✅ Enregistrement réussi !");
-      document.getElementById("popup").style.display = "none";
-      document.getElementById("main-content").style.display = "block";
-    } else {
-      alert("❌ Erreur lors de l’enregistrement. Réessaie !");
-    }
-
-  } catch (err) {
-    alert("Erreur de connexion : " + err.message);
-  } finally {
-    bouton.disabled = false;
-    bouton.textContent = "S’enregistrer";
-  }
-});
 
     // Variable globale pour stocker les détails du produit actuel
     let currentProduct = {};
@@ -954,6 +843,104 @@ function initLogoTouchHandler(logo) {
           document.getElementById('popup-welcome').style.display = 'flex';
         });
     }
+
+    //==================================================================================
+    //=================================================================================
+    // Fonction pour vérifier si l'utilisateur est déjà connecté
+function checkUserSession() {
+  const userData = localStorage.getItem('userData');
+  if (!userData) {
+    showLoginModal();
+  } else {
+    hideLoginModal();
+  }
+}
+
+// Afficher le modal de connexion
+function showLoginModal() {
+  document.getElementById('loginModal').style.display = 'block';
+  loadAgents();
+}
+
+// Cacher le modal de connexion
+function hideLoginModal() {
+  document.getElementById('loginModal').style.display = 'none';
+}
+
+// Charger la liste des agents depuis Google Apps Script
+function loadAgents() {
+  google.script.run
+    .withSuccessHandler(function(agents) {
+      const agentSelect = document.getElementById('agent');
+      agentSelect.innerHTML = '<option value="">Sélectionnez un agent</option>';
+      
+      agents.forEach(function(agent) {
+        const option = document.createElement('option');
+        option.value = agent;
+        option.textContent = agent;
+        agentSelect.appendChild(option);
+      });
+    })
+    .withFailureHandler(function(error) {
+      console.error('Erreur lors du chargement des agents:', error);
+      alert('Erreur lors du chargement de la liste des agents');
+    })
+    .getAgents();
+}
+
+// Gérer la soumission du formulaire
+document.getElementById('loginForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  
+  const userData = {
+    nom: document.getElementById('nom').value,
+    tel: document.getElementById('tel').value,
+    email: document.getElementById('email').value,
+    agent: document.getElementById('agent').value
+  };
+  
+  // Validation basique
+  if (!userData.nom || !userData.tel || !userData.email || !userData.agent) {
+    alert('Veuillez remplir tous les champs obligatoires');
+    return;
+  }
+  
+  // Enregistrer l'utilisateur
+  google.script.run
+    .withSuccessHandler(function(result) {
+      if (result.success) {
+        localStorage.setItem('userData', JSON.stringify(userData));
+        hideLoginModal();
+        alert('Bienvenue ' + userData.nom + '!');
+        // Recharger l'application ou effectuer d'autres actions nécessaires
+        location.reload();
+      } else {
+        alert('Erreur lors de l\'enregistrement: ' + result.message);
+      }
+    })
+    .withFailureHandler(function(error) {
+      console.error('Erreur:', error);
+      alert('Erreur lors de la connexion');
+    })
+    .registerUser(userData);
+});
+
+// Vérifier la session au chargement de la page
+document.addEventListener('DOMContentLoaded', function() {
+  checkUserSession();
+});
+
+// Fonction pour se déconnecter (optionnelle)
+function logout() {
+  localStorage.removeItem('userData');
+  showLoginModal();
+}
+
+// Fonction pour obtenir les données de l'utilisateur connecté
+function getCurrentUser() {
+  const userData = localStorage.getItem('userData');
+  return userData ? JSON.parse(userData) : null;
+}
   });
 }
 
