@@ -852,8 +852,7 @@ document.addEventListener('DOMContentLoaded', waitForLogoAndInit);
 //==========================================================
 //==========================================================
 
-const apiURL = "https://script.google.com/macros/s/AKfycbzDeSDfYzb_953duQ-HuubILeZfzoRrtNe7d2Z7MEQbvVH9tzFZ1Dm0xTSHyZEgl7BIzg/exec";
-
+const apiURL = "https://script.google.com/macros/s/AKfycbx8WW1QSZ4Z4_AR60hCaorzCPRVRALGIOCsZu_9gTTOgEWd4mzfvv0eOetNIkR4tTVQDg/exec";
 
 
 // 🔍 Vérifie si le site a déjà été ouvert sur ce téléphone
