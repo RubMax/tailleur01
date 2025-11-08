@@ -1,4 +1,4 @@
- window.deferredPrompt = window.deferredPrompt || null;
+
 
     // Variable globale pour stocker les détails du produit actuel
     let currentProduct = {};
