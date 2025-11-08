@@ -13,8 +13,8 @@ function estMobile() {
 }
 
 window.onload = async function () {
-  const popup = document.getElementById("popup");
-  const main = document.getElementById("main-content");
+  const popup = document.getElementById("reg-popup");
+  const main = document.getElementById("main-content2");
 
   // Si déjà enregistré ou si c'est un ordinateur → on saute le popup
   if (dejaEnregistre() || !estMobile()) {
