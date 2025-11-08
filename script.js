@@ -16,7 +16,7 @@
  if (socialLinks) socialLinks.remove();
     if (pedDePage) pedDePage.remove();
       // Chargement des données
-     fetch("https://script.google.com/macros/s/AKfycbwoTyj8mpGYPfWCOxszGA-SPYTSBsJbJoHyFKgIr-b5xSAu-CO9pgE3bCebLGAWCVDnPg/exec?page=api")
+     fetch("https://script.google.com/macros/s/AKfycbyRHCuLb0IC_fLpQs36UW_zzgnwmDHAJtDZHByZjz3rxHieXr-Xw54yt5NvCEZgzk64xQ/exec?page=api")
   .then(response => response.json())
   .then(data => {
     displayProduits(data);
@@ -709,14 +709,13 @@ ${(() => {
     return;
   }
 
-  let message = `Olá, Gostaria de solicitar, fazer ou saber mais sobre este produto: ${currentProduct.nom}\n` +
-                `Codigo : ${currentProduct.code}\n` +
-                `Preco : R$ ${currentProduct.prix}`;
+  let message = `Olá! Mwen vle rechaje:\n` + 
+                `${currentProduct.nom}\n`;
 
   if (currentProduct.selectedSize) {
-    message += `\nT/Desc : ${currentProduct.selectedSize}`;
+    message += `\nDesc : ${currentProduct.selectedSize}`;
   } else if (sizesArray.length === 1) {
-    message += `\nT/Desc : ${sizesArray[0]}`;
+    message += `\nDesc : ${sizesArray[0]}`;
   }
 
   window.open(`https://wa.me/916204805?text=${encodeURIComponent(message)}`, '_blank');
@@ -849,65 +848,3 @@ function initLogoTouchHandler(logo) {
 }
 
 document.addEventListener('DOMContentLoaded', waitForLogoAndInit);
-
-
-const popup = document.getElementById("popup");
-const enregistrerBtn = document.getElementById("enregistrerBtn");
-
-const GAS_URL = "https://script.google.com/macros/s/AKfycbzDeSDfYzb_953duQ-HuubILeZfzoRrtNe7d2Z7MEQbvVH9tzFZ1Dm0xTSHyZEgl7BIzg/exec"; // change ici
-
-// Afficher le popup seulement la première fois
-window.addEventListener("load", async () => {
-  const dejaEnregistre = localStorage.getItem("enregistre");
-  if (!dejaEnregistre) {
-    popup.style.display = "flex";
-    await chargerAgents();
-  }
-});
-
-// Charger la liste des agents depuis Google Sheets
-async function chargerAgents() {
-  try {
-    const res = await fetch(`${GAS_URL}?action=getAgents`);
-    const data = await res.json();
-    const select = document.getElementById("agentSelect");
-    select.innerHTML = `<option value="">Choisir un agent</option>`;
-    data.forEach(agent => {
-      const opt = document.createElement("option");
-      opt.value = agent;
-      opt.textContent = agent;
-      select.appendChild(opt);
-    });
-  } catch (err) {
-    console.error("Erreur lors du chargement des agents:", err);
-  }
-}
-
-// Sauvegarder le client
-enregistrerBtn.addEventListener("click", async () => {
-  const nom = document.getElementById("nom").value.trim();
-  const tel = document.getElementById("tel").value.trim();
-  const email = document.getElementById("email").value.trim();
-  const agent = document.getElementById("agentSelect").value;
-
-  if (!nom || !tel || !email || !agent) {
-    alert("Veuillez remplir tous les champs.");
-    return;
-  }
-
-  try {
-    const res = await fetch(`${GAS_URL}?action=saveClient&nom=${encodeURIComponent(nom)}&tel=${encodeURIComponent(tel)}&email=${encodeURIComponent(email)}&agent=${encodeURIComponent(agent)}`);
-    const text = await res.text();
-
-    if (text === "OK") {
-      alert("Enregistrement réussi !");
-      localStorage.setItem("enregistre", "true");
-      popup.style.display = "none";
-    } else {
-      alert("Erreur lors de l'enregistrement.");
-    }
-  } catch (err) {
-    alert("Erreur de connexion.");
-    console.error(err);
-  }
-});
