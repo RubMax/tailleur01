@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin - Agents</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <h2>Ajouter un agent</h2>
+  <input id="agentName" placeholder="Nom de l'agent">
+  <button onclick="addAgent()">Enregistrer</button>
+
+  <h3>Liste des agents :</h3>
+  <ul id="agentList"></ul>
+
+  <script src="script.js"></script>
+  <script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbx8WW1QSZ4Z4_AR60hCaorzCPRVRALGIOCsZu_9gTTOgEWd4mzfvv0eOetNIkR4tTVQDg/exec";
+    loadAgentList();
+  </script>
+</body>
+</html>
