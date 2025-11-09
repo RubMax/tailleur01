@@ -711,8 +711,7 @@ ${(() => {
     return;
   }
 
-  let message = `Olá, Gostaria de solicitar, fazer ou saber mais sobre este produto: ${currentProduct.nom}\n` +
-                `Codigo : ${currentProduct.code}\n` +
+  let message = `Slt, Mwen ta renmen pran sevis sa: ${currentProduct.nom}\n` +
                 `Preco : R$ ${currentProduct.prix}`;
 
   if (currentProduct.selectedSize) {
