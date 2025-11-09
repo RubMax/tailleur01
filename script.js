@@ -876,8 +876,9 @@ function loadAgents() {
       console.error('Erreur chargement agents:', error);
     });
 }
-
+//============================================
 // Fonction pour enregistrer le client
+// ✅ Fonction pour enregistrer le client
 function registerClient(clientData) {
   const SAVE_URL = `https://script.google.com/macros/s/AKfycbzDeSDfYzb_953duQ-HuubILeZfzoRrtNe7d2Z7MEQbvVH9tzFZ1Dm0xTSHyZEgl7BIzg/exec` +
     `?action=saveClient&nom=${encodeURIComponent(clientData.nom)}` +
@@ -886,26 +887,9 @@ function registerClient(clientData) {
     `&agent=${encodeURIComponent(clientData.agent)}`;
 
   return fetch(SAVE_URL)
-    .then(response => response.json()) // 🔹 Ici, on lit du JSON
+    .then(response => response.json())
     .then(result => {
-     // Validation simple avant l’envoi
-if (!formData.nom || formData.nom.length < 2) {
-  showRegisterMessage('Veuillez entrer un nom valide.', true);
-  submitBtn.disabled = false;
-  submitBtn.textContent = 'Accéder à l\'application';
-  return;
-}
-
-const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-if (!emailRegex.test(formData.email)) {
-  showRegisterMessage('Adresse e-mail invalide.', true);
-  submitBtn.disabled = false;
-  submitBtn.textContent = 'Accéder à l\'application';
-  return;
-}
-
       if (result.success) {
-        // ✅ Succès → enregistrement local
         localStorage.setItem('clientRegistered', 'true');
         localStorage.setItem('clientData', JSON.stringify(clientData));
         console.log(result.message);
@@ -920,13 +904,49 @@ if (!emailRegex.test(formData.email)) {
     });
 }
 
+// ✅ Fonction de validation visuelle
+function validateFormInputs(formData) {
+  let valid = true;
 
-// Fonction pour vérifier si déjà enregistré
+  // Réinitialiser les styles avant chaque validation
+  const fields = ['nom', 'tel', 'email', 'agent'];
+  fields.forEach(id => {
+    const field = document.getElementById(id);
+    if (field) field.style.border = '1px solid #ccc';
+  });
+
+  // Vérifier chaque champ et colorer en rouge si incorrect
+  if (!formData.nom || formData.nom.trim().length < 2) {
+    document.getElementById('nom').style.border = '2px solid red';
+    valid = false;
+  }
+
+  const telRegex = /^[0-9]{8,15}$/;
+  if (!telRegex.test(formData.tel)) {
+    document.getElementById('tel').style.border = '2px solid red';
+    valid = false;
+  }
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(formData.email)) {
+    document.getElementById('email').style.border = '2px solid red';
+    valid = false;
+  }
+
+  if (!formData.agent || formData.agent === 'Choisir un agent') {
+    document.getElementById('agent').style.border = '2px solid red';
+    valid = false;
+  }
+
+  return valid;
+}
+
+// ✅ Vérifie si déjà enregistré
 function checkRegistration() {
   return localStorage.getItem('clientRegistered') === 'true';
 }
 
-// Fonction pour afficher le message
+// ✅ Message de confirmation/erreur
 function showRegisterMessage(message, isError = false) {
   const messageEl = document.getElementById('register-message');
   messageEl.textContent = message;
@@ -936,71 +956,75 @@ function showRegisterMessage(message, isError = false) {
   messageEl.style.border = isError ? '1px solid #ffcdd2' : '1px solid #c8e6c9';
 }
 
-// Initialisation de l'enregistrement
+// ✅ Initialisation de l’enregistrement
 function initRegistration() {
-  // Vérifier si déjà enregistré
+  const popup = document.getElementById('register-popup');
+  const form = document.getElementById('register-form');
+  const messageEl = document.getElementById('register-message');
+
+  if (!popup || !form) {
+    console.error("❌ Erreur : le popup d'enregistrement est introuvable dans le HTML.");
+    return;
+  }
+
   if (checkRegistration()) {
-    document.getElementById('register-popup').style.display = 'none';
+    popup.style.display = 'none';
     document.body.classList.remove('registration-pending');
     return;
   }
-  
-  // Afficher le popup d'enregistrement
-  document.getElementById('register-popup').style.display = 'flex';
+
+  popup.style.display = 'flex';
   document.body.classList.add('registration-pending');
-  
-  // Charger la liste des agents
   loadAgents();
-  
-  // Gérer la soumission du formulaire
-  document.getElementById('register-form').addEventListener('submit', function(e) {
+
+  form.addEventListener('submit', function (e) {
     e.preventDefault();
-    
+    messageEl.style.display = 'none';
+
     const formData = {
       nom: document.getElementById('nom').value.trim(),
       tel: document.getElementById('tel').value.trim(),
       email: document.getElementById('email').value.trim(),
       agent: document.getElementById('agent').value
     };
-    
-    // Validation basique
-    if (!formData.nom || !formData.tel) {
-      showRegisterMessage('Veuillez remplir les champs obligatoires (Nom et Téléphone)', true);
+
+    // ✅ Validation visuelle
+    if (!validateFormInputs(formData)) {
+      showRegisterMessage('⚠️ Veuillez corriger les champs en rouge avant de continuer.', true);
       return;
     }
-    
-    // Désactiver le bouton pendant l'enregistrement
+
+    // 🔄 Désactiver le bouton pendant l’enregistrement
     const submitBtn = document.querySelector('.register-btn');
     submitBtn.disabled = true;
     submitBtn.textContent = 'Enregistrement...';
-    
-    // Enregistrer le client
+
+    // 📩 Envoi vers le serveur
     registerClient(formData)
       .then(result => {
-        showRegisterMessage('Enregistrement réussi! Accès à l\'application...', false);
-        
-        // Rediriger après un court délai
-        setTimeout(() => {
-          document.getElementById('register-popup').style.display = 'none';
-          document.body.classList.remove('registration-pending');
-          
-          // Charger l'application principale
-          loadMainApp();
-        }, 1500);
+        if (result.success) {
+          showRegisterMessage('✅ Enregistrement réussi ! Accès à l\'application...', false);
+          setTimeout(() => {
+            popup.style.display = 'none';
+            document.body.classList.remove('registration-pending');
+            loadMainApp();
+          }, 1500);
+        } else {
+          showRegisterMessage('❌ Erreur : ' + (result.message || 'Veuillez réessayer.'), true);
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Accéder à l\'application';
+        }
       })
       .catch(error => {
-        showRegisterMessage('Erreur: ' + error.message, true);
-        
-        // Réactiver le bouton
+        showRegisterMessage('🚫 Erreur : ' + error.message, true);
         submitBtn.disabled = false;
         submitBtn.textContent = 'Accéder à l\'application';
       });
   });
 }
 
-// Fonction pour charger l'application principale
+// ✅ Chargement principal de l’app (inchangé)
 function loadMainApp() {
-  // Votre code de chargement existant ici
   const BASE = "https://script.google.com/macros/s/AKfycbzDeSDfYzb_953duQ-HuubILeZfzoRrtNe7d2Z7MEQbvVH9tzFZ1Dm0xTSHyZEgl7BIzg/exec";
   const logoUrlAPI = BASE + "?page=logo";
   const dataUrlAPI = BASE + "?page=api";
@@ -1008,38 +1032,34 @@ function loadMainApp() {
   const fetchText = (url) => fetch(url, { cache: "no-store" }).then(r => r.text());
   const fetchJSON = (url) => fetch(url, { cache: "no-store" }).then(r => r.json());
 
-  const waitForImageLoad = (imgUrl, imgEl) => new Promise((resolve) => {
-    if (!imgUrl) return resolve("no-url");
-    const test = new Image();
-    test.onload = () => { imgEl.src = imgUrl; resolve("ok"); };
-    test.onerror = () => { imgEl.alt = "Logo indisponible"; resolve("error"); };
-    test.src = imgUrl;
-  });
-
   const loader = document.getElementById("page-loader");
   const app = document.getElementById("app");
   const logoEl = document.getElementById("logo");
 
-  // Afficher le loader pendant le chargement
   loader.style.display = "flex";
   app.classList.remove("app-ready");
 
   Promise.all([
-    fetchText(logoUrlAPI).then(url => waitForImageLoad(url, logoEl)),
+    fetchText(logoUrlAPI).then(url => {
+      const test = new Image();
+      return new Promise(resolve => {
+        test.onload = () => { logoEl.src = url; resolve("ok"); };
+        test.onerror = () => resolve("error");
+        test.src = url;
+      });
+    }),
     fetchJSON(dataUrlAPI)
   ])
-  .then(([logoStatus, data]) => {
-    if (typeof displayProducts === "function") {
-      displayProducts(data);
-    }
-  })
-  .catch(err => {
-    console.error("Erreur lors du chargement :", err);
-    document.getElementById("produits").innerHTML = 
-      "<div class='alert alert-danger'>Erreur de chargement des données</div>";
-  })
-  .finally(() => {
-    loader.style.display = "none";
-    app.classList.add("app-ready");
-  });
+    .then(([_, data]) => {
+      if (typeof displayProducts === "function") displayProducts(data);
+    })
+    .catch(err => {
+      console.error("Erreur lors du chargement :", err);
+      document.getElementById("produits").innerHTML =
+        "<div class='alert alert-danger'>Erreur de chargement des données</div>";
+    })
+    .finally(() => {
+      loader.style.display = "none";
+      app.classList.add("app-ready");
+    });
 }
