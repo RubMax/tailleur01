@@ -41,6 +41,41 @@
   </style>
 </head>
 <body>
+  <!-- Popup d'enregistrement (doit être le premier élément) -->
+<div id="register-popup" class="register-popup-overlay" style="display: flex;">
+  <div class="register-popup-content">
+    <h2>📋 Enregistrement</h2>
+    <p>Veuillez vous enregistrer pour accéder à l'application</p>
+    
+    <form id="register-form">
+      <div class="form-group">
+        <label for="nom">Nom complet *</label>
+        <input type="text" id="nom" name="nom" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="tel">Téléphone *</label>
+        <input type="tel" id="tel" name="tel" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email">
+      </div>
+      
+      <div class="form-group">
+        <label for="agent">Nom de l'agent</label>
+        <select id="agent" name="agent">
+          <option value="">Sélectionnez un agent</option>
+        </select>
+      </div>
+      
+      <button type="submit" class="register-btn">Accéder à l'application</button>
+    </form>
+    
+    <div id="register-message" style="display: none; margin-top: 10px; padding: 10px; border-radius: 5px;"></div>
+  </div>
+</div>
   <!-- Loader -->
   <div id="page-loader"><div class="spinner"></div></div>
 
@@ -49,12 +84,12 @@
     <!-- En-tête fixe -->
     <div class="fixed-header">
       <div class="logo-container" style="display: flex">
-        <p style="font-weight: bold; color: blue; font-size: 20px;"><strong>RECARGA INTERNACIONAL</strong></p>
+        <p>RECARGA CELULAR INT.</p>
         <button id="installBtn" style="
           background-color:;
           color: white;
           padding: 2px 2px;
-          font-size: 20px;
+          font-size: 18px;
           border: none;
           border-radius: 8px;
           box-shadow: 0 0 10px rgba(0,0,0,0.2);
@@ -74,23 +109,6 @@
       <div id="produits"></div>
     </div>
 
-
-    <!-- =======================================================Popup d'enregistrement -->
-    <!-- =======================================================Popup d'enregistrement -->
-  <div id="reg-popup" class="popup">
-    <div class="popup-content2">
-      <h2>Inscription</h2>
-      <input type="text" id="nom" placeholder="Nom complet" required>
-      <input type="tel" id="tel" placeholder="Téléphone" required>
-      <input type="email" id="email" placeholder="Email" required>
-      <select id="agent" required>
-        <option value="">Choisir un agent...</option>
-      </select>
-      <button id="enregistrer">S’enregistrer</button>
-    </div>
-  </div>
-
-  <script 
     <!-- Popup avec galerie d'images -->
     <div id="popup" class="popup">
       <span class="popup-close" onclick="closePopup()">&times;</span>
@@ -193,13 +211,5 @@
   </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
 
 
