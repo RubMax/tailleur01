@@ -876,6 +876,21 @@ function loadAgents() {
       console.error('Erreur chargement agents:', error);
     });
 }
+// Validation simple avant l’envoi
+if (!formData.nom || formData.nom.length < 2) {
+  showRegisterMessage('Veuillez entrer un nom valide.', true);
+  submitBtn.disabled = false;
+  submitBtn.textContent = 'Accéder à l\'application';
+  return;
+}
+
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+if (!emailRegex.test(formData.email)) {
+  showRegisterMessage('Adresse e-mail invalide.', true);
+  submitBtn.disabled = false;
+  submitBtn.textContent = 'Accéder à l\'application';
+  return;
+}
 
 // Fonction pour enregistrer le client
 function registerClient(clientData) {
