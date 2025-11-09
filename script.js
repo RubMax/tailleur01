@@ -876,7 +876,19 @@ function loadAgents() {
       console.error('Erreur chargement agents:', error);
     });
 }
-// Validation simple avant l’envoi
+
+// Fonction pour enregistrer le client
+function registerClient(clientData) {
+  const SAVE_URL = `https://script.google.com/macros/s/AKfycbzDeSDfYzb_953duQ-HuubILeZfzoRrtNe7d2Z7MEQbvVH9tzFZ1Dm0xTSHyZEgl7BIzg/exec` +
+    `?action=saveClient&nom=${encodeURIComponent(clientData.nom)}` +
+    `&tel=${encodeURIComponent(clientData.tel)}` +
+    `&email=${encodeURIComponent(clientData.email)}` +
+    `&agent=${encodeURIComponent(clientData.agent)}`;
+
+  return fetch(SAVE_URL)
+    .then(response => response.json()) // 🔹 Ici, on lit du JSON
+    .then(result => {
+     // Validation simple avant l’envoi
 if (!formData.nom || formData.nom.length < 2) {
   showRegisterMessage('Veuillez entrer un nom valide.', true);
   submitBtn.disabled = false;
@@ -892,17 +904,6 @@ if (!emailRegex.test(formData.email)) {
   return;
 }
 
-// Fonction pour enregistrer le client
-function registerClient(clientData) {
-  const SAVE_URL = `https://script.google.com/macros/s/AKfycbzDeSDfYzb_953duQ-HuubILeZfzoRrtNe7d2Z7MEQbvVH9tzFZ1Dm0xTSHyZEgl7BIzg/exec` +
-    `?action=saveClient&nom=${encodeURIComponent(clientData.nom)}` +
-    `&tel=${encodeURIComponent(clientData.tel)}` +
-    `&email=${encodeURIComponent(clientData.email)}` +
-    `&agent=${encodeURIComponent(clientData.agent)}`;
-
-  return fetch(SAVE_URL)
-    .then(response => response.json()) // 🔹 Ici, on lit du JSON
-    .then(result => {
       if (result.success) {
         // ✅ Succès → enregistrement local
         localStorage.setItem('clientRegistered', 'true');
