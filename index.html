@@ -41,59 +41,32 @@
   </style>
 </head>
 <body>
-    <!-- Loader -->
-  <div id="page-loader"><div class="spinner"></div></div>
-
-  <!-- Tout le contenu de la page est dans #app -->
-  <div id="app">
-    <!-- En-tête fixe -->
-    <div class="fixed-header">
-      <div class="logo-container" style="display: flex">
-        <img id="logo" class="logo-img">
-        <button id="installBtn" style="
-          background-color:;
-          color: white;
-          padding: 2px 2px;
-          font-size: 18px;
-          border: none;
-          border-radius: 8px;
-          box-shadow: 0 0 10px rgba(0,0,0,0.2);
-          z-index: 9999;
-          cursor: pointer;
-        ">📲</button>
-      </div>
-      <div class="nav-scroll-container" id="nav-container">
-        <div id="section-nav" class="section-nav"></div>
-      </div>
-    </div>
-
-    <br>
   <!-- Popup d'enregistrement (doit être le premier élément) -->
 <div id="register-popup" class="register-popup-overlay" style="display: flex;">
   <div class="register-popup-content">
-    <h2>📋 Enregistre</h2>
-    <p><b>Ranpli fom nan, pou ou ka gen akse ap aplikasyon an</b></p>
+    <h2>📋 Enregistrement</h2>
+    <p>Veuillez vous enregistrer pour accéder à l'application</p>
     
     <form id="register-form">
       <div class="form-group">
-        <label for="nom">Non: *</label>
+        <label for="nom">Nom complet *</label>
         <input type="text" id="nom" name="nom" required>
       </div>
       
       <div class="form-group">
-        <label for="tel">Telefon: *</label>
+        <label for="tel">Téléphone *</label>
         <input type="tel" id="tel" name="tel" required>
       </div>
       
       <div class="form-group">
-        <label for="email">Email: *</label>
+        <label for="email">Email</label>
         <input type="email" id="email" name="email">
       </div>
       
       <div class="form-group">
-        <label for="agent">Chwazi non ajan ki envite ou la nan lis la: *</label>
+        <label for="agent">Nom de l'agent</label>
         <select id="agent" name="agent">
-          <option value="">👇Chwazi non ajan an</option>
+          <option value="">Sélectionnez un agent</option>
         </select>
       </div>
       
@@ -238,9 +211,5 @@
   </script>
 </body>
 </html>
-
-
-
-
 
 
