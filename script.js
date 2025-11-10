@@ -313,7 +313,12 @@ div.className = "article produit-ligne" + (hasImage ? "" : " no-image");
 
 
           <div class="article-details">
-            <h3 style="text-transform: uppercase" onclick="showPopup('${escapeHtml(produit.image)}', '${escapeHtml(produit.nom)}', '${descriptionParam}', '${escapeHtml(produit.prix)}', '${escapeHtml(produit.tailles)}', '${escapeHtml(produit.code)}')">${escapeHtml(produit.nom)}', '${escapeHtml(produit.section)'}</h3>
+            <h3 style="text-transform: uppercase"
+    onclick="showPopup('${escapeHtml(produit.image)}', '${escapeHtml(produit.nom)}', '${descriptionParam}', '${escapeHtml(produit.prix)}', '${escapeHtml(produit.tailles)}', '${escapeHtml(produit.code)}', '${escapeHtml(produit.section)}')">
+  ${escapeHtml(produit.nom)}
+</h3>
+
+
 
             
 
@@ -365,7 +370,7 @@ ${(() => {
   `;
 })()}
 <br>
-            <button class="open-button" onclick="showPopup('${escapeHtml(produit.image)}', '${escapeHtml(produit.nom)}', '${descriptionParam}', '${escapeHtml(produit.prix)}', '${escapeHtml(produit.tailles)}', '${escapeHtml(produit.code)}')">Solicite/Realise</button>
+            <button class="open-button" onclick="showPopup('${escapeHtml(produit.image)}', '${escapeHtml(produit.nom)}', '${descriptionParam}', '${escapeHtml(produit.prix)}', '${escapeHtml(produit.tailles)}', '${escapeHtml(produit.code)}', '${escapeHtml(produit.section)}')">Solicite/Realise</button>
             
           
 
@@ -712,9 +717,9 @@ ${(() => {
     return;
   }
 
-  let message = `Slt, Mwen ta renmen pran sevis sa: ${currentProduct.nom}\n` +
-                `Payi : ${currentProduct.section}\n` +
-                `Preco : R$ ${currentProduct.prix}`;
+  let message = `Slt, Mwen vle pran sevis sa:\n` +
+                 `${currentProduct.nom}\n` +
+                `Peyi : ${currentProduct.section}\n`;
 
   if (currentProduct.selectedSize) {
     message += `\nT/Desc : ${currentProduct.selectedSize}`;
@@ -877,7 +882,7 @@ function loadAgents() {
       console.error('Erreur chargement agents:', error);
     });
 }
-//============================================
+
 // Fonction pour enregistrer le client
 // ✅ Fonction pour enregistrer le client
 function registerClient(clientData) {
