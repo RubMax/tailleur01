@@ -307,13 +307,13 @@ div.className = "article produit-ligne" + (hasImage ? "" : " no-image");
   <div class="article-image">
     <img src="${escapeHtml(produit.image)}" 
          alt="${escapeHtml(produit.nom)}" 
-         onclick="showPopup('${escapeHtml(produit.image)}', '${escapeHtml(produit.nom)}', '${descriptionParam}', '${escapeHtml(produit.prix)}', '${escapeHtml(produit.tailles)}', '${escapeHtml(produit.code)}')">
+         onclick="showPopup('${escapeHtml(produit.image)}', '${escapeHtml(produit.nom)}', '${descriptionParam}', '${escapeHtml(produit.prix)}', '${escapeHtml(produit.tailles)}', '${escapeHtml(produit.code)}', '${escapeHtml(produit.section)}')">
   </div>
 ` : ''}
 
 
           <div class="article-details">
-            <h3 style="text-transform: uppercase" onclick="showPopup('${escapeHtml(produit.image)}', '${escapeHtml(produit.nom)}', '${descriptionParam}', '${escapeHtml(produit.prix)}', '${escapeHtml(produit.tailles)}', '${escapeHtml(produit.code)}')">${escapeHtml(produit.nom)}</h3>
+            <h3 style="text-transform: uppercase" onclick="showPopup('${escapeHtml(produit.image)}', '${escapeHtml(produit.nom)}', '${descriptionParam}', '${escapeHtml(produit.prix)}', '${escapeHtml(produit.tailles)}', '${escapeHtml(produit.code)}')">${escapeHtml(produit.nom)}', '${escapeHtml(produit.section)'}</h3>
 
             
 
@@ -493,7 +493,7 @@ ${(() => {
     
     
     /* Fonctions pour la galerie d'images */
-  function showPopup(imageUrl, nom, description, prix, tailles, code, hideWhatsappButton = false) {
+  function showPopup(imageUrl, nom, description, prix, tailles, code, section, hideWhatsappButton = false) {
   // Supprimer la première image de la galerie
   imageUrls = imageUrl.split(',').map(url => url.trim()).slice(1); // 👈 ici
   
@@ -513,6 +513,7 @@ ${(() => {
     prix,
     tailles,
     code,
+    section,
     selectedSize: hasMultipleSizes ? null : sizesArray[0]
   };
 
