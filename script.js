@@ -722,9 +722,9 @@ ${(() => {
                 `Peyi : ${currentProduct.section}\n`;
 
   if (currentProduct.selectedSize) {
-    message += `\nT/Desc : ${currentProduct.selectedSize}`;
+    message += `\nDesc : ${currentProduct.selectedSize}`;
   } else if (sizesArray.length === 1) {
-    message += `\nT/Desc : ${sizesArray[0]}`;
+    message += `\nDesc : ${sizesArray[0]}`;
   }
 
   window.open(`https://wa.me/916204805?text=${encodeURIComponent(message)}`, '_blank');
