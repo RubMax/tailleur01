@@ -165,6 +165,31 @@
   <script src="install.js"></script>
 
   <script>
+    //=============================STOP ORDINATEUR===========================================
+    document.addEventListener('DOMContentLoaded', function () {
+  const isMobile = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|Mobile/i.test(navigator.userAgent);
+
+  if (!isMobile) {
+    document.body.innerHTML = `
+      <div style="
+        font-family: Arial, sans-serif;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background: #000;
+        color: white;
+        text-align: center;
+        padding: 20px;
+      ">
+        <h2>⚠️ Accès refusé</h2>
+        <p>Cette application est disponible uniquement sur téléphone mobile.</p>
+      </div>
+    `;
+  }
+});
+    //======================================================================
     document.addEventListener("DOMContentLoaded", () => {
       const loader = document.getElementById("page-loader");
       const app = document.getElementById("app");
@@ -211,5 +236,6 @@
   </script>
 </body>
 </html>
+
 
 
