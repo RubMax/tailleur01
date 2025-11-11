@@ -166,12 +166,18 @@
 
   <script>
     //=============================STOP ORDINATEUR===========================================
-   document.addEventListener('DOMContentLoaded', function () {
+   
+document.addEventListener('DOMContentLoaded', function () {
   const isMobile = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|Mobile/i.test(navigator.userAgent);
+
   if (!isMobile) {
-    window.location.href = "https://ton-site.com/erreur-mobile.html";
+    // 🔹 Redirige automatiquement vers la page locale "erreur-mobile.html"
+    const currentPath = window.location.pathname;
+    const basePath = currentPath.substring(0, currentPath.lastIndexOf('/') + 1);
+    window.location.href = basePath + "erreur-mobile.html";
   }
 });
+
     //======================================================================
     document.addEventListener("DOMContentLoaded", () => {
       const loader = document.getElementById("page-loader");
@@ -219,6 +225,7 @@
   </script>
 </body>
 </html>
+
 
 
 
