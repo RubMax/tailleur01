@@ -1,6 +1,6 @@
 {
-  "name": "RubMax Servicos App",
-  "short_name": "RubMaxApp",
+  "name": "RubMax Servicos Rechaj",
+  "short_name": "RubMaxRechaj",
   "scope": "./",
   "start_url": "./index.html?homescreen=1",
   "orientation": "portrait",
@@ -20,4 +20,5 @@
     }
   ]
 }
+
 
