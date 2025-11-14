@@ -699,21 +699,17 @@ ${(() => {
   }
 }
     
-   function sendWhatsAppMessage() {
+   // Ton numéro WhatsApp (à personnaliser)
+const WHATSAPP_NUMBER = "11964362420";
+
+function sendWhatsAppMessage() { 
   const sizesArray = currentProduct.tailles.split(',').map(size => size.trim()).filter(size => size !== '');
   const hasMultipleSizes = sizesArray.length > 1;
   const sizesContainer = document.getElementById('sizes-container');
 
   if (hasMultipleSizes && !currentProduct.selectedSize) {
-    // Ajouter l'animation de secousse
     sizesContainer.classList.add('shake');
-
-    // Supprimer l'animation après 0.5s
-    setTimeout(() => {
-      sizesContainer.classList.remove('shake');
-    }, 500);
-
-    // Supprimer l'alerte visuelle
+    setTimeout(() => sizesContainer.classList.remove('shake'), 500);
     return;
   }
 
@@ -727,8 +723,10 @@ ${(() => {
     message += `\nDesc : ${sizesArray[0]}`;
   }
 
-  window.open(`https://wa.me/916204805?text=${encodeURIComponent(message)}`, '_blank');
+  // Ouvre WhatsApp
+  window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, '_blank');
 }
+
 
 function closePopup() {
   const popup = document.getElementById("popup");
@@ -890,7 +888,7 @@ function registerClient(clientData) {
     `?action=saveClient&nom=${encodeURIComponent(clientData.nom)}` +
     `&tel=${encodeURIComponent(clientData.tel)}` +
     `&email=${encodeURIComponent(clientData.email)}` +
-    `&agent=${encodeURIComponent(clientData.agent)}`;
+    `&whatsappAgent=${encodeURIComponent(clientData.whatsappAgent)}`; // 👈 Ajouté
 
   return fetch(SAVE_URL)
     .then(response => response.json())
@@ -910,12 +908,13 @@ function registerClient(clientData) {
     });
 }
 
+
 // ✅ Fonction de validation visuelle
 function validateFormInputs(formData) {
   let valid = true;
 
   // Réinitialiser les styles avant chaque validation
-  const fields = ['nom', 'tel', 'email', 'agent'];
+  const fields = ['nom', 'tel', 'email'];
   fields.forEach(id => {
     const field = document.getElementById(id);
     if (field) field.style.border = '1px solid #ccc';
@@ -936,11 +935,6 @@ function validateFormInputs(formData) {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(formData.email)) {
     document.getElementById('email').style.border = '2px solid red';
-    valid = false;
-  }
-
-  if (!formData.agent || formData.agent === 'Choisir un agent') {
-    document.getElementById('agent').style.border = '2px solid red';
     valid = false;
   }
 
@@ -969,7 +963,7 @@ function initRegistration() {
   const messageEl = document.getElementById('register-message');
 
   if (!popup || !form) {
-    console.error("❌ Erreur : le popup d'enregistrement est introuvable dans le HTML.");
+    console.error("❌ Erreur : le popup d'enregistrement est introuvable.");
     return;
   }
 
@@ -990,26 +984,31 @@ function initRegistration() {
     const formData = {
       nom: document.getElementById('nom').value.trim(),
       tel: document.getElementById('tel').value.trim(),
-      email: document.getElementById('email').value.trim(),
-      agent: document.getElementById('agent').value
+      email: document.getElementById('email').value,
+      whatsappAgent: WHATSAPP_NUMBER
     };
 
-    // ✅ Validation visuelle
+    // Validation visuelle
     if (!validateFormInputs(formData)) {
       showRegisterMessage('⚠️ Veuillez corriger les champs en rouge avant de continuer.', true);
       return;
     }
 
-    // 🔄 Désactiver le bouton pendant l’enregistrement
     const submitBtn = document.querySelector('.register-btn');
     submitBtn.disabled = true;
-    submitBtn.textContent = 'Enregistrement...';
+    submitBtn.textContent = 'Vérification...';
 
-    // 📩 Envoi vers le serveur
+    // Envoi vers le serveur
     registerClient(formData)
       .then(result => {
         if (result.success) {
-          showRegisterMessage('✅ Enregistrement réussi ! Accès à l\'application...', false);
+          // ✅ Succès - que ce soit un nouveau client ou un client existant
+          const message = result.dejaEnregistre 
+            ? '✅ Bienvenue de retour ! Accès à l\'application...'
+            : '✅ Enregistrement réussi ! Accès à l\'application...';
+          
+          showRegisterMessage(message, false);
+          
           setTimeout(() => {
             popup.style.display = 'none';
             document.body.classList.remove('registration-pending');
