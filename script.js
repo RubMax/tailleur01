@@ -18,7 +18,7 @@
  if (socialLinks) socialLinks.remove();
     if (pedDePage) pedDePage.remove();
       // Chargement des données
-     fetch("https://script.google.com/macros/s/AKfycbyRHCuLb0IC_fLpQs36UW_zzgnwmDHAJtDZHByZjz3rxHieXr-Xw54yt5NvCEZgzk64xQ/exec?page=api")
+     fetch("https://script.google.com/macros/s/AKfycbx0Kxwp5Do05aCkOtFNQM2x1Gh72AyzI8qcENzMityDr8bErm9Cp6nI6Yk6J0psoebj/exec?page=api")
   .then(response => response.json())
   .then(data => {
     displayProduits(data);
@@ -803,7 +803,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (tapCount === 3) {
       tapCount = 0;
 
-      fetch('https://script.google.com/macros/s/AKfycbwoTyj8mpGYPfWCOxszGA-SPYTSBsJbJoHyFKgIr-b5xSAu-CO9pgE3bCebLGAWCVDnPg/exec?page=popupWelcome')
+      fetch('https://script.google.com/macros/s/AKfycbx0Kxwp5Do05aCkOtFNQM2x1Gh72AyzI8qcENzMityDr8bErm9Cp6nI6Yk6J0psoebj/exec?page=popupWelcome')
         .then(response => response.text())
         .then(content => {
           document.querySelector('#popup-welcome .popup-content p').innerText = content;
@@ -844,7 +844,7 @@ function initLogoTouchHandler(logo) {
       tapCount = 0;
       console.log("🎉 3 taps détectés !");
 
-      fetch('https://script.google.com/macros/s/AKfycbwoTyj8mpGYPfWCOxszGA-SPYTSBsJbJoHyFKgIr-b5xSAu-CO9pgE3bCebLGAWCVDnPg/exec?page=popupWelcome')
+      fetch('https://script.google.com/macros/s/AKfycbx0Kxwp5Do05aCkOtFNQM2x1Gh72AyzI8qcENzMityDr8bErm9Cp6nI6Yk6J0psoebj/exec?page=popupWelcome')
         .then(r => r.text())
         .then(content => {
           document.querySelector('#popup-welcome .popup-content p').innerText = content;
@@ -861,7 +861,7 @@ let agentsList = [];
 
 // Fonction pour charger la liste des agents
 function loadAgents() {
-  const AGENTS_URL = "https://script.google.com/macros/s/AKfycbzDeSDfYzb_953duQ-HuubILeZfzoRrtNe7d2Z7MEQbvVH9tzFZ1Dm0xTSHyZEgl7BIzg/exec?action=getAgents";
+  const AGENTS_URL = "https://script.google.com/macros/s/AKfycbx0Kxwp5Do05aCkOtFNQM2x1Gh72AyzI8qcENzMityDr8bErm9Cp6nI6Yk6J0psoebj/exec?action=getAgents";
   
   fetch(AGENTS_URL)
     .then(response => response.json())
@@ -884,7 +884,7 @@ function loadAgents() {
 // Fonction pour enregistrer le client
 // ✅ Fonction pour enregistrer le client
 function registerClient(clientData) {
-  const SAVE_URL = `https://script.google.com/macros/s/AKfycbzDeSDfYzb_953duQ-HuubILeZfzoRrtNe7d2Z7MEQbvVH9tzFZ1Dm0xTSHyZEgl7BIzg/exec` +
+  const SAVE_URL = `https://script.google.com/macros/s/AKfycbx0Kxwp5Do05aCkOtFNQM2x1Gh72AyzI8qcENzMityDr8bErm9Cp6nI6Yk6J0psoebj/exec` +
     `?action=saveClient&nom=${encodeURIComponent(clientData.nom)}` +
     `&tel=${encodeURIComponent(clientData.tel)}` +
     `&email=${encodeURIComponent(clientData.email)}` +
@@ -1030,7 +1030,7 @@ function initRegistration() {
 
 // ✅ Chargement principal de l’app (inchangé)
 function loadMainApp() {
-  const BASE = "https://script.google.com/macros/s/AKfycbzDeSDfYzb_953duQ-HuubILeZfzoRrtNe7d2Z7MEQbvVH9tzFZ1Dm0xTSHyZEgl7BIzg/exec";
+  const BASE = "https://script.google.com/macros/s/AKfycbx0Kxwp5Do05aCkOtFNQM2x1Gh72AyzI8qcENzMityDr8bErm9Cp6nI6Yk6J0psoebj/exec";
   const logoUrlAPI = BASE + "?page=logo";
   const dataUrlAPI = BASE + "?page=api";
 
